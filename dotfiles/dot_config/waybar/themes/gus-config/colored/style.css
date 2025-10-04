@@ -1,0 +1,54 @@
+/*
+@import '../../../../../.config/waybar/colors.css';
+
+@define-color color11 @on_primary;
+@define-color color5 @on_secondary;
+
+@define-color backgroundlight @color5;
+@define-color backgrounddark @color11;
+@define-color workspacesbackground1 @color5;
+@define-color workspacesbackground2 @color11;
+@define-color bordercolor @color11;
+@define-color textcolor1 @on_surface;
+@define-color textcolor2 @on_surface;
+@define-color textcolor3 @on_surface;
+@define-color iconcolor @on_surface;
+
+@import '../style.css';
+*/
+
+@import '../../../../../.config/waybar/colors.css';
+
+/* Accent colors */
+@define-color accent_bg @primary_container;
+@define-color accent_fg @on_primary_container;
+
+/* Secondary/hover/active accent */
+@define-color accent_bg_alt @secondary_container;
+@define-color accent_fg_alt @on_secondary_container;
+
+/* Bar backgrounds */
+@define-color backgroundlight @surface;
+@define-color backgrounddark @surface_variant;
+@define-color bordercolor @outline;
+
+/* Workspaces */
+@define-color workspacesbackground1 @primary_fixed;       /* Active workspace */
+@define-color workspacesbackground2 @surface_container;   /* Inactive workspace */
+@define-color workspacesborder @primary;                  /* Border/accent */
+
+/* Text */
+@define-color textcolor1 @on_surface;           /* Main text */
+@define-color textcolor2 @on_surface_variant;   /* Muted text */
+@define-color textcolor3 @on_primary_container; /* Highlight/accent text */
+
+/* Icons */
+@define-color iconcolor @on_surface;
+
+/* Error/alert */
+@define-color error_bg @error_container;
+@define-color error_fg @on_error_container;
+
+@import '../style.css';
+
+
