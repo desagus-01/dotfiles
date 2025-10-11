@@ -14,10 +14,16 @@
       "HDMI-A-1": [1, 2, 3, 4],
       "DP-2": [5, 6, 7, 8]
       {{- else -}}
-      "*": 6
+      "*": 5
       {{- end }}
      },
-    "format": "{name}: {windows}",
+     {{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" -}}
+      "format": "{name}: {windows}",
+      {{- else -}}
+      "format": "{windows}",
+      {{- end }}
+     },
+ 
     "format-window-separator": " ",
     "window-rewrite-default": " ",
     "window-rewrite": {
