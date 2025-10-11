@@ -1,0 +1,11 @@
+{{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" -}}
+# HDMI + DP setup
+monitor=HDMI-A-1,1920x1080@60.0,0x203,1.0
+monitor=HDMI-A-1,transform,3
+monitor=DP-2,2560x1440@143.91,1080x427,1.0
+{{- else -}}
+# Default single-monitor setup
+monitor=eDP-1,1920x1080@60,0x0,1.0
+{{- end -}}
+
+
