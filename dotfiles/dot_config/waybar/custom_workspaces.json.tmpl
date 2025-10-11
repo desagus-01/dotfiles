@@ -1,0 +1,70 @@
+{
+  // NUMBERS and ICONS style with window rewrite 
+  "hyprland/workspaces#rw": {
+    "disable-scroll": true,
+    "all-outputs": false,
+    "warp-on-scroll": false,
+    "sort-by-number": true,
+    "show-special": false,
+    "on-click": "activate",
+    "on-scroll-up": "hyprctl dispatch workspace e+1",
+    "on-scroll-down": "hyprctl dispatch workspace e-1",
+    "persistent-workspaces": {
+     {{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" -}}
+      "HDMI-A-1": [1, 2, 3, 4],
+      "DP-2": [5, 6, 7, 8]
+      {{- else -}}
+      "*": 6
+      {{- end }}
+     },
+    "format": "{name}: {windows}",
+    "format-window-separator": " ",
+    "window-rewrite-default": " ",
+    "window-rewrite": {
+      "title<.*youtube.*>": "",
+      "title<.*amazon.*>": "",
+      "title<.*reddit.*>": "",
+      "title<.*Picture-in-Picture.*>": "",
+      "title<.*nvim.*>": "",
+      "title<.*nvim*>": "",
+      "title<.*nvplan*>": "",
+      "title<.*nvconf*>": "",
+      "class<firefox|org.mozilla.firefox|librewolf|floorp|mercury-browser|[Cc]achy-browser>": "",
+      "class<kitty|konsole>": " ",
+      "class<kitty-dropterm>": "",
+      "class<Chromium|Thorium>": "",
+      "class<org.telegram.desktop|io.github.tdesktop_x64.TDesktop>": "",
+      "class<[Ss]potify>": "",
+      "class<code>": "󰨞",
+      "class<thunar>": "󰝰",
+      "class<[Tt]hunderbird|[Tt]hunderbird-esr>": "",
+      "class<eu.betterbird.Betterbird>": "",
+      "class<discord|[Ww]ebcord|Vesktop>": "",
+      "class<subl>": "󰅳",
+      "class<mpv>": "",
+      "class<celluloid|Zoom>": "",
+      "class<Cider>": "󰎆",
+      "class<virt-manager>": "",
+      "class<.virt-manager-wrapped>": "",
+      "class<codeblocks>": "󰅩",
+      "class<mousepad>": "",
+      "class<libreoffice-writer>": "",
+      "class<libreoffice-startcenter>": "󰏆",
+      "class<com.obsproject.Studio>": "",
+      "class<polkit-gnome-authentication-agent-1>": "󰒃",
+      "class<nwg-look>": "",
+      "class<zen>": "󰰷", //Zen Browser
+      "class<microsoft-edge>": "",
+      "class<vlc>": "󰕼",
+      "class<steam>": "",
+      "class<anki>": "",
+      "class<org.kde.okular>": "",
+      "class<ferdium>": " ",
+      "class<libreoffice-calc>": "",
+      "class<Wfica>": "󰱯",
+      "class<Dbeaver>": "",
+      "class<org.gnome.Nautilus>": "󰉋",
+      "class<blueman-manager>": "󰂯",
+   }
+  }
+}
