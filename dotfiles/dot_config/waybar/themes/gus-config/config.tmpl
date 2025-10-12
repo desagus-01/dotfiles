@@ -42,7 +42,8 @@
         "hyprland/workspaces#rw"
     ],
 
-    // Modules Right    
+{{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" -}}
+    // PC Config
     "modules-right": [
         "pulseaudio",
         "backlight",
@@ -58,6 +59,24 @@
         "custom/exit"
     ],
 
+{{- else -}}
+//laptop config
+  "modules-right": [
+	"battery",
+        "pulseaudio",
+        "backlight",
+        // "bluetooth",
+        "network",
+        "custom/ddc_brightness", 
+        "clock",
+        "power-profiles-daemon",
+        "group/hardware",
+        "tray",
+        "custom/notification",
+        "custom/ml4w-welcome",
+        "custom/exit"
+    ],
+{{- end}}
 }
 
 
