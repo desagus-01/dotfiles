@@ -104,8 +104,6 @@ bind = $mainMod, mouse_up, workspace, e-1    # Open previous workspace
 bind = $mainMod CTRL, down, workspace, empty # Open the next empty workspace
 
 # Fn keys
-bind = , XF86MonBrightnessUp, exec, ~/.config/hypr/scripts/hypr_brightness.sh -                                                                                                  # Increase brightness by 10%
-bind = , XF86MonBrightnessDown, exec,  ~/.config/hypr/scripts/hypr_brightness.sh +                                                                                                # Reduce brightness by 10%
 bind = , XF86AudioRaiseVolume, exec, pactl set-sink-mute @DEFAULT_SINK@ 0 && pactl set-sink-volume @DEFAULT_SINK@ +5%                                        # Increase volume by 5%
 bind = , XF86AudioLowerVolume, exec, pactl set-sink-mute @DEFAULT_SINK@ 0 && pactl set-sink-volume @DEFAULT_SINK@ -5%                                        # Reduce volume by 5%
 bind = , XF86AudioMute, exec, pactl set-sink-mute @DEFAULT_SINK@ toggle                                                                                      # Toggle mute
@@ -115,8 +113,14 @@ bind = , XF86AudioNext, exec, playerctl next                                    
 bind = , XF86AudioPrev, exec, playerctl previous                                                                                                             # Audio previous
 bind = , XF86AudioMicMute, exec, pactl set-source-mute @DEFAULT_SOURCE@ toggle                                                                               # Toggle microphone
 bind = , XF86Calculator, exec, ~/.config/ml4w/settings/calculator.sh                                                                                         # Open calculator
-bind = , XF86Lock, exec, hyprlock                                                                                                                            # Open screenlock
+bind = , XF86Lock, exec, hyprlock 
 
-bind = , code:238, exec, brightnessctl -d smc::kbd_backlight s +10
-bind = , code:237, exec, brightnessctl -d smc::kbd_backlight s 10-
+{{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" }}
+bind = , XF86MonBrightnessUp,   exec, ~/.config/hypr/scripts/hypr_brightness.sh +
+bind = , XF86MonBrightnessDown, exec, ~/.config/hypr/scripts/hypr_brightness.sh -
+{{- else }}
 
+bind = , XF86MonBrightnessUp, exec, brightnessctl set 10%+ 
+bind = , XF86MonBrightnessDown, exec, brightnessctl set 10%-
+
+{{ end }}
