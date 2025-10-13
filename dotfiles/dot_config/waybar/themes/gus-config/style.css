@@ -194,7 +194,7 @@ window#waybar.empty #window {
     font-size: 20px;
     font-weight: bold;
     opacity: 0.8;
-    color: @iconcolor;
+    color: @workspacesborder;
 }
 
 #custom-quicklink1,
@@ -215,7 +215,7 @@ window#waybar.empty #window {
 }
 
 #custom-hypridle.active {
-    color: @iconcolor;
+    color: @workspacesbackground2;
 }
 
 #custom-hypridle.notactive {
@@ -250,7 +250,7 @@ window#waybar.empty #window {
     font-size: 22px;
     font-weight: bold;
     opacity: 0.8;
-    color: @iconcolor;
+    color: @workspacesbackground2;
 }
 
 #idle_inhibitor.activated {
@@ -284,7 +284,7 @@ window#waybar.empty #window {
     margin: 0px 13px 0px 0px;
     padding:0px;
     font-size:20px;
-    color: @iconcolor;
+    color: @workspacesborder;
     opacity: 0.8;
 }
 
@@ -296,8 +296,8 @@ window#waybar.empty #window {
     margin: 0px 13px 0px 0px;
     padding:0px;
     font-size:20px;
-    color: @iconcolor;
-    opacity: 0.8;
+    color: @workspacesborder;
+    opacity: 1;
 }
 
 /* -----------------------------------------------------
@@ -337,7 +337,7 @@ window#waybar.empty #window {
     margin:0px;
     padding:0px;
     font-size:16px;
-    color:@iconcolor;
+    color:@workspacesborder;
 }
 
 #language {
@@ -352,7 +352,7 @@ window#waybar.empty #window {
     margin: 0px 13px 0px 0px;
     padding:0px;
     font-size:16px;
-    color:@iconcolor;
+    color:@workspacesborder;
 }
 
 /* -----------------------------------------------------
