@@ -9,6 +9,7 @@
     "on-click": "activate",
     "on-scroll-up": "hyprctl dispatch workspace e+1",
     "on-scroll-down": "hyprctl dispatch workspace e-1",
+
     "persistent-workspaces": {
      {{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" -}}
       "HDMI-A-1": [1, 2, 3, 4],
@@ -22,6 +23,7 @@
       {{- else -}}
       "format": "{windows}",
       {{- end }}
+
     "format-window-separator": " ",
     "window-rewrite-default": " ",
     "window-rewrite": {
@@ -42,7 +44,7 @@
       "class<[Ss]potify>": "",
       "class<code>": "󰨞",
       "class<thunar>": "󰝰",
-      "class<[Tt]hunderbird|[Tt]hunderbird-esr>": "",
+      "class<[Tt]hunderbird|[Tt]hunderbird-esr>": " ",
       "class<eu.betterbird.Betterbird>": "",
       "class<discord|[Ww]ebcord|Vesktop>": "",
       "class<subl>": "󰅳",
