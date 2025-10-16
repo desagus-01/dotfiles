@@ -1,3 +1,5 @@
+
+{{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" -}}
 # -----------------------------------------------------
 # General workspace rules
 # name: "Default"
@@ -21,3 +23,11 @@ workspace = 8, monitor:DP-2, persistent = true, default = false
 # workspace = name:gaming, monitor:desc:Chimei Innolux Corporation 0x150C, default:true
 # workspace = 5, on-created-empty:[float] firefox
 # workspace = special:scratchpad, on-created-empty:foot
+
+{{- else }}
+
+#No need
+
+{{- end -}}
+
+
