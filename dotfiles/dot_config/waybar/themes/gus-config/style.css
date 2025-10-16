@@ -231,16 +231,6 @@ window#waybar.empty #window {
     padding-right: 20px;
 }
 
-#custom-chatgpt {
-    margin-right: 16px;
-    background-image: url("../assets/openai.svg");
-    background-repeat: no-repeat;
-    background-position: center;
-    background-size: contain;
-    padding-right: 18px;
-    opacity: 0.8;
-}
-
 /* -----------------------------------------------------
  * Idle Inhibator
  * ----------------------------------------------------- */
@@ -421,8 +411,8 @@ window#waybar.empty #window {
 }
 
 #network.ethernet {
-    background-color: @backgroundlight;
-    color: @textcolor2;
+    /* background-color: @backgroundlight; */
+    color: @workspacesborder;
 }
 
 #network.wifi {
@@ -492,8 +482,12 @@ window#waybar.empty #window {
  * ----------------------------------------------------- */
 
 #tray {
-    padding: 0px 15px 0px 0px;
+    margin: 0px 13px 0px 0px;
+    padding:0px;
+    font-size:16px;
+    color:@workspacesborder;
 }
+
 
 #tray > .passive {
     -gtk-icon-effect: dim;
