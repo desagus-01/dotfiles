@@ -1,0 +1,13 @@
+.config/ml4w/cache/**
+**/wallpaper-generated/**
+**/*.png
+**/current_wallpaper*
+.config/waypaper/config.ini
+.config/hypr/colors.conf
+.config/kitty/colors-matugen.conf
+.config/rofi/colors.rasi
+.config/waybar/colors.css
+.config/wlogout/colors.css
+.config/swaync/colors.css
+.config/nwg-dock-hyprland/colors.css
+.config/ohmyposh/colors.json
