@@ -52,8 +52,7 @@ fi
 # ---------------------------------------------
 # 20-customization: history + oh-my-posh prompt
 # 25-aliases: all your aliases
-# 30-autostart: fastfetch & Hyprland hint
-for file in 20-customization 25-aliases 30-autostart; do
+for file in 20-customization 25-aliases; do
   [ -f "$ZSH_MODULE_DIR/$file" ] && source "$ZSH_MODULE_DIR/$file"
 done
 

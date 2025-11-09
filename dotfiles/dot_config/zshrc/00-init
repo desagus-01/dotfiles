@@ -71,3 +71,7 @@ mkcd() {
     esac
   fi
 }
+
+#Fastfetch
+ fastfetch --config examples/13
+
