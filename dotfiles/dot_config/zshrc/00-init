@@ -3,3 +3,71 @@
 # -----------------------------------------------------
 export EDITOR=nvim
 export PATH=$PATH:~/.cargo/bin/
+
+
+# Functions
+
+gacp() {
+  # If there are no staged *and* no unstaged changes, bail out
+  if git diff --cached --quiet && git diff --quiet; then
+    echo "No changes to commit."
+    return 0
+  fi
+
+  git add .
+  git commit -m "$*"
+  git push
+}
+
+
+nvplan() {
+  local config_dir="$HOME/Documents/personal/planning"
+
+  # If --up is anywhere in the args, just sync and exit
+  for arg in "$@"; do
+    if [ "$arg" = "--up" ]; then
+      echo "Syncing your Notes"
+      git -C "$config_dir" pull >/dev/null 2>&1 && echo "Done!!"
+      return
+    fi
+  done
+
+  echo "Moving to Notes dir..."
+  cd "$config_dir" || return
+
+  echo "Syncing Notes..."
+  git pull >/dev/null 2>&1 && echo "Opening Notes"
+
+  # Open Neovim with any args passed
+  nvim "$@"
+}
+
+
+nvconf() {
+  if [ "$1" = "--up" ]; then
+    local config_dir="$HOME/.config/nvim"
+    echo "Updating Neovim Config..."
+    git -C "$config_dir" pull
+    echo "Update is Done"
+  else
+    echo "Moving to Neovim"
+    cd "$HOME/.config/nvim/" || return
+    echo "Updating Neovim"
+    git pull
+    echo "Opening Neovim"
+    nvim "$@"
+  fi
+}
+
+
+
+mkcd() {
+  command mkdir "$@"
+  if [ $? -eq 0 ]; then
+    local last="${@[-1]}"
+    case "$last" in
+      -*) ;; 
+      *)  cd "$last" || return ;;
+    esac
+  fi
+}
