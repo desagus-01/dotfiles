@@ -71,6 +71,16 @@ mkcd() {
   fi
 }
 
+
+chupd() {
+  echo "Moving to Chezmoi"
+  chezmoi cd
+  echo "Pulling latest"
+  git pull
+  echo "Exiting Chezmoi"
+  exit
+}
+
 #Fastfetch
  fastfetch --config examples/13
 
