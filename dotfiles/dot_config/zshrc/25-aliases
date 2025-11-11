@@ -5,6 +5,7 @@
 # -----------------------------------------------------
 # General
 # -----------------------------------------------------
+alias chcd='chezmoi cd'
 alias c='clear'
 alias nf='fastfetch'
 alias pf='fastfetch'
