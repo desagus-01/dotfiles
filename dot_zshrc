@@ -25,7 +25,7 @@ ZSH_MODULE_DIR="$HOME/.config/zshrc"
 # --------------------------
 
 # We let oh-my-posh handle the prompt, so we keep the theme empty.
-ZSH_THEME=""
+ZSH_THEME="agnoster"
 
 plugins=(
   z
