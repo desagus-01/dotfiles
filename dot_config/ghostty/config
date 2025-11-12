@@ -1,4 +1,7 @@
+
 background-opacity = 0.93
 background-blur = true
 
 confirm-close-surface = false
+
+theme = Catppuccin Frappe
