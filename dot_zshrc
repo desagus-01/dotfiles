@@ -10,30 +10,22 @@
 
 # ------------------------------------
 
-# 0) Where oh-my-zsh is installed
-# This matches what you already had:
 export ZSH="$HOME/.config/.oh-my-zsh"
 
 # Directory containing 00-init, 20-customization, 25-aliases, 30-autostart
-# Change this if your files live somewhere else.
 ZSH_MODULE_DIR="$HOME/.config/zshrc"
+
 
 # 1) Load basic exports (00-init)
 [ -f "$ZSH_MODULE_DIR/00-init" ] && source "$ZSH_MODULE_DIR/00-init"
 
-# 2) oh-my-zsh core settings
-# --------------------------
-
-# We let oh-my-posh handle the prompt, so we keep the theme empty.
 ZSH_THEME="agnoster"
 
 plugins=(
   z
   virtualenv
-  git
-  sudo
-  web-search
   archlinux
+  terraform
   zsh-autosuggestions
   fast-syntax-highlighting
   copyfile
@@ -41,19 +33,12 @@ plugins=(
   dirhistory
 )
 
-# 3) Load oh-my-zsh itself
-# ------------------------
 if [ -s "$ZSH/oh-my-zsh.sh" ]; then
   source "$ZSH/oh-my-zsh.sh"
 fi
 
 # 4) Load your custom modules (after oh-my-zsh)
-# ---------------------------------------------
-# 20-customization: history + oh-my-posh prompt
-# 25-aliases: all your aliases
 for file in 20-customization 25-aliases; do
   [ -f "$ZSH_MODULE_DIR/$file" ] && source "$ZSH_MODULE_DIR/$file"
 done
 
-# (You can still use any remaining oh-my-zsh template bits
-#  below here if you want extra comments/options.)
