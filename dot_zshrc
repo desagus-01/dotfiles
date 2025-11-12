@@ -25,6 +25,7 @@ plugins=(
   z
   virtualenv
   archlinux
+  zsh-autopair
   terraform
   zsh-autosuggestions
   fast-syntax-highlighting
