@@ -4,4 +4,6 @@ background-blur = true
 
 confirm-close-surface = false
 
-theme = Catppuccin Frappe
+theme = matugen.conf
+
+

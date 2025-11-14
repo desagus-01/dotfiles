@@ -1,5 +1,9 @@
 [config]
 
+[templates.ghostty]
+input_path = "~/.config/matugen/templates/ghostty/matugen.conf"
+output_path = "~/.config/ghostty/themes/matugen.conf"
+
 [templates.kitty]
 input_path = '~/.config/matugen/templates/kitty-colors.conf'
 output_path = '~/.config/kitty/colors-matugen.conf'
