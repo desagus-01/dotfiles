@@ -45,4 +45,4 @@ done
 
 
 # ENV vars
-export OLLAMA_MODEL=qwen2.5-coder:14
+export OLLAMA_MODEL=qwen2.5-coder:14b
