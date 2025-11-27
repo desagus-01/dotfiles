@@ -43,3 +43,6 @@ for file in 20-customization 25-aliases; do
   [ -f "$ZSH_MODULE_DIR/$file" ] && source "$ZSH_MODULE_DIR/$file"
 done
 
+
+# ENV vars
+export OLLAMA_MODEL=qwen2.5-coder:14
