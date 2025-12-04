@@ -6,4 +6,4 @@ confirm-close-surface = false
 
 theme = matugen.conf
 
-minimum-contrast = 3
+minimum-contrast = 2
