@@ -8,18 +8,12 @@
 alias chcd='chezmoi cd'
 alias ched='chezmoi edit'
 alias chap='chezmoi apply'
+alias chup='chezmoi update'
+alias gpull='git pull'
 alias c='clear'
-alias nf='fastfetch'
-alias pf='fastfetch'
-alias ff='fastfetch'
-alias ls='eza -a --icons=always'
-alias ll='eza -al --icons=always'
-alias lt='eza -a --tree --level=1 --icons=always'
-alias shutdown='systemctl poweroff'
+lias shutdown='systemctl poweroff'
 alias n='$EDITOR'
-alias ts='~/.config/ml4w/scripts/snapshot.sh'
 alias wifi='nmtui'
-alias cleanup='~/.config/ml4w/scripts/cleanup.sh'
 
 # -----------------------------------------------------
 # ML4W Apps

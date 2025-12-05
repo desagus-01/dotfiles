@@ -14,3 +14,9 @@ dotfiles/.config/nwg-dock-hyprland/colors.css
 dotfiles/.config/ohmyposh/colors.json
 dotfiles/.config/ohmyposh/EDM115-newline.omp.json
 dotfiles/.config/ghostty/themes/matugen.conf
+
+#for git stuff
+.config/.oh-my-zsh/.git/**
+.config/.oh-my-zsh/cache/**
+.config/spicetify/config-xpui.ini 
+.config/.oh-my-zsh/plugins/zsh-navigation-tools/doc/img
