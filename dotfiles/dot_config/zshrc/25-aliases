@@ -11,7 +11,7 @@ alias chap='chezmoi apply'
 alias chup='chezmoi update'
 alias gpull='git pull'
 alias c='clear'
-lias shutdown='systemctl poweroff'
+alias shutdown='systemctl poweroff'
 alias n='$EDITOR'
 alias wifi='nmtui'
 
