@@ -17,6 +17,10 @@ dotfiles/.config/ghostty/themes/matugen.conf
 
 #for git stuff
 .config/.oh-my-zsh/.git/**
+.config/.oh-my-zsh/.github/**
+.config/.oh-my-zsh/plugins/**
+.config/.oh-my-zsh/tools/**
+.config/.oh-my-zsh/lib/**
 .config/.oh-my-zsh/cache/**
 .config/spicetify/config-xpui.ini 
 .config/.oh-my-zsh/plugins/zsh-navigation-tools/doc/img
