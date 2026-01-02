@@ -117,11 +117,23 @@ else
     _writeLog "Wallpaper effect is set to off"
 fi
 
+
+# -----------------------------------------------------
+# Create "normal" wallpaper cache for hyprpaper (keep aspect)
+# -----------------------------------------------------
+
+fullwallpaper="$ml4w_cache_folder/wallpaper.png"
+
+_writeLog "Updating full wallpaper cache: $fullwallpaper"
+cp -f "$used_wallpaper" "$fullwallpaper"
+sync
+
 # -----------------------------------------------------
 # Detect Theme
 # -----------------------------------------------------
 
 SETTINGS_FILE="$HOME/.config/gtk-3.0/settings.ini"
+THEME_PREF="$(grep -E '^gtk-application-prefer-dark-theme=' "$SETTINGS_FILE" | cut -d= -f2 | tr -d '[:space:]')"
 
 
 # -----------------------------------------------------
@@ -149,13 +161,15 @@ _writeLog "Restarted hyprpaper"
 # Execute matugen
 # -----------------------------------------------------
 
-
-THEME_PREF="$(grep -E '^gtk-application-prefer-dark-theme=' "$SETTINGS_FILE" | cut -d= -f2 | tr -d '[:space:]')"
+if ! command -v matugen >/dev/null 2>&1; then
+  _writeLog "ERROR: matugen not found in PATH"
+  exit 1
+fi
 
 if [ "${THEME_PREF:-0}" = "1" ]; then
-    "$HOME/.local/bin/matugen" image "$squarewallpaper" -m dark
+  matugen image "$squarewallpaper" -m dark
 else
-    "$HOME/.local/bin/matugen" image "$squarewallpaper" -m light
+  matugen image "$squarewallpaper" -m light
 fi
 
 
@@ -165,14 +179,6 @@ fi
 
 sleep 1
 $HOME/.config/waybar/launch.sh
-
-# -----------------------------------------------------
-# Reload nwg-dock-hyprland
-# -----------------------------------------------------
-
-$HOME/.config/nwg-dock-hyprland/launch.sh &
-
-
 
 # -----------------------------------------------------
 # Update SwayNC

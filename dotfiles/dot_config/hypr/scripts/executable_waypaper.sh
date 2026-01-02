@@ -16,5 +16,5 @@ echo ":: Launching waypaper: $WAYPAPER_BIN"
 "$WAYPAPER_BIN" "$@"
 
 # When the UI closes, apply whatever was selected (your script handles reading cache/defaults)
-"$HOME/.config/hypr/scripts/wallpaper.sh"
+# "$HOME/.config/hypr/scripts/wallpaper.sh"
 
