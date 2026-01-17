@@ -151,10 +151,10 @@ cp "$squarewallpaper" "$generatedversions/square-$wallpaperfilename.png"
 # Tell hyprpaper to re-apply wallpaper (single-file cache)
 # -----------------------------------------------------
 
-# Restart hyprpaper so it re-reads the config
-# pkill -x hyprpaper 2>/dev/null || true
-# nohup hyprpaper >/dev/null 2>&1 &
-# _writeLog "Restarted hyprpaper"
+Restart hyprpaper so it re-reads the config
+pkill -x hyprpaper 2>/dev/null || true
+nohup hyprpaper >/dev/null 2>&1 &
+_writeLog "Restarted hyprpaper"
 
 
 # -----------------------------------------------------
