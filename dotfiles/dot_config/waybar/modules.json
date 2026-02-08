@@ -6,6 +6,16 @@
 //
 //
 {
+	// update
+	"custom/custom_updates": {
+	  "exec": "~/.config/scripts/weekly_update.sh status --waybar",
+	  "return-type": "json",
+	  "interval": 3600,
+	  "on-click": "~/.config/scripts/weekly_update.sh status run"
+	},
+
+
+
   // Workspaces
   "hyprland/workspaces": {
     "on-scroll-up": "hyprctl dispatch workspace r-1",
@@ -457,4 +467,7 @@
         "tooltip": false,
     },
 
-}
+},
+
+
+
