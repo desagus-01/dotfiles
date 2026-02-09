@@ -24,3 +24,8 @@ dotfiles/.config/ghostty/themes/matugen.conf
 .config/.oh-my-zsh/cache/**
 .config/spicetify/config-xpui.ini 
 .config/.oh-my-zsh/plugins/zsh-navigation-tools/doc/img
+
+# annoying oh my zsh stuff:
+.config/.oh-my-zsh/CONTRIBUTING.md
+.config/.oh-my-zsh/LICENSE.txt
+.config/.oh-my-zsh/README.md
