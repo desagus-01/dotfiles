@@ -1,4 +1,3 @@
-
 {{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" -}}
 wallpaper {
     monitor = HDMI-A-1
@@ -9,15 +8,20 @@ wallpaper {
 wallpaper {
     monitor = DP-2
     path = ~/.cache/ml4w/hyprland-dotfiles/wallpaper.png
-    fit_mode = crop
+    fit_mode = cover
 }
+
 splash = false
+ipc = true
 {{- else -}}
 
 wallpaper {
     monitor = eDP-1
     path = ~/.cache/ml4w/hyprland-dotfiles/wallpaper.png
-    fit_mode = crop
+    fit_mode = cover
 }
+
 splash = false
+ipc = true
 {{- end -}}
+

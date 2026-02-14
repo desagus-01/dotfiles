@@ -42,8 +42,11 @@ fi
 # Set wallpaper
 # -----------------------------------------------------
 
-echo ":: Setting wallpaper with source image $wallpaper"
-if [ -f ~/.local/bin/waypaper ]; then
-    export PATH=$PATH:~/.local/bin/
-fi
-waypaper --wallpaper "$wallpaper"
+# echo ":: Setting wallpaper with source image $wallpaper"
+# if [ -f ~/.local/bin/waypaper ]; then
+#     export PATH=$PATH:~/.local/bin/
+# fi
+# waypaper --wallpaper "$wallpaper"
+
+# Set wallpaper using ML4W pipeline (generates cache + triggers engine)
+bash -lc "$HOME/.config/hypr/scripts/wallpaper.sh \"$wallpaper\""
