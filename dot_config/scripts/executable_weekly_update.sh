@@ -111,7 +111,7 @@ case "$cmd" in
     # Aggressive cache cleanup:
     # -Scc: remove ALL cached packages (like pacman -Scc)
     # -Sc : paru also cleans cached AUR packages + untracked cache files
-    paru -Scc "${PARU_FLAGS[@]}" || true
+    # paru -Scc "${PARU_FLAGS[@]}" || true
     paru -Sc  "${PARU_FLAGS[@]}" || true
 
     echo "==> Writing success stamp…"
