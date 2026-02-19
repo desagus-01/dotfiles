@@ -33,3 +33,4 @@ alias ml4w-update='~/.config/ml4w/update.sh'
 # Scripts
 # -----------------------------------------------------
 alias ascii='~/.config/ml4w/scripts/figlet.sh'
+alias weekly-update="~/.config/scripts/weekly_update.sh"

@@ -2,7 +2,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-APP_NAME="cachyos-weekly-update"
+APP_NAME="weekly-update"
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/${APP_NAME}"
 STAMP_FILE="${STATE_DIR}/last_success_epoch"
 LOCK_FILE="${STATE_DIR}/lock"
@@ -28,8 +28,8 @@ days_since_last() {
 usage() {
   cat <<'EOF'
 Usage:
-  cachyos-weekly-update run [--force] [--noconfirm]
-  cachyos-weekly-update status [--waybar]
+  weekly-update run [--force] [--noconfirm]
+  weekly-update status [--waybar]
 
 Commands:
   run        Runs: mirrors -> keyrings -> paru upgrade -> clean cache -> stamp time
@@ -124,16 +124,16 @@ case "$cmd" in
     DAYS="$(days_since_last)"
 
     if [[ "$WAYBAR" -eq 1 ]]; then
-  if [[ "$DAYS" -ge 7 ]]; then
-    printf '{"text":"⬆ %sd","class":"updates","tooltip":"%s days since last successful update"}\n' \
-      "$DAYS" "$DAYS"
-  else
-    printf '{"text":"","class":"noupdates","tooltip":"%s days since last successful update"}\n' \
-      "$DAYS"
-  fi
-else
-  echo "$DAYS"
-fi
+      if [[ "$DAYS" -ge 7 ]]; then
+        printf '{"text":"⬆ %sd","class":"updates","tooltip":"%s days since last successful update"}\n' \
+          "$DAYS" "$DAYS"
+      else
+        printf '{"text":"","class":"noupdates","tooltip":"%s days since last successful update"}\n' \
+          "$DAYS"
+      fi
+    else
+      echo "$DAYS"
+    fi
     ;;
 
   *)
@@ -141,3 +141,4 @@ fi
     exit 2
     ;;
 esac
+
