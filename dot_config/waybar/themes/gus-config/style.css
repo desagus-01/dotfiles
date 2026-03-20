@@ -274,7 +274,7 @@ window#waybar.empty #window {
     margin: 0px 13px 0px 0px;
     padding:0px;
     font-size:20px;
-    color: @workspacesborder;
+    color:@workspacesbackground2;
     opacity: 0.8;
 }
 
@@ -286,7 +286,7 @@ window#waybar.empty #window {
     margin: 0px 13px 0px 0px;
     padding:0px;
     font-size:20px;
-    color: @workspacesborder;
+    color:@workspacesbackground2;
     opacity: 1;
 }
 
@@ -327,7 +327,7 @@ window#waybar.empty #window {
     margin:0px;
     padding:0px;
     font-size:16px;
-    color:@workspacesborder;
+    color:@workspacesbackground2;
 }
 
 #language {
@@ -342,7 +342,8 @@ window#waybar.empty #window {
     margin: 0px 13px 0px 0px;
     padding:0px;
     font-size:16px;
-    color:@workspacesborder;
+    color:@workspacesbackground2;
+    /* color:@workspacesborder; */
 }
 
 /* -----------------------------------------------------
