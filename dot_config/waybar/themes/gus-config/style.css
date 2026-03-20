@@ -276,8 +276,8 @@ window#waybar.empty #window {
     margin: 0px 13px 0px 0px;
     padding:0px;
     font-size:20px;
-    color:@workspacesbackground2;
-    opacity: 0.8;
+    color:@workspacesborder;
+    opacity:1.0;
 }
 
 /* -----------------------------------------------------
@@ -288,8 +288,8 @@ window#waybar.empty #window {
     margin: 0px 13px 0px 0px;
     padding:0px;
     font-size:20px;
-    color:@workspacesbackground2;
-    opacity: 1;
+    color:@workspacesborder;
+    opacity: 1.0;
 }
 
 /* -----------------------------------------------------
@@ -344,8 +344,8 @@ window#waybar.empty #window {
     margin: 0px 13px 0px 0px;
     padding:0px;
     font-size:16px;
-    color:@workspacesbackground2;
-    /* color:@workspacesborder; */
+    opacity:1.0;
+    color:@workspacesborder;
 }
 
 /* -----------------------------------------------------
