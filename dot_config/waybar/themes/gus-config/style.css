@@ -23,16 +23,16 @@ window#waybar {
  #custom-weather.rainyDay,
  #custom-weather.rainyNight,
  #custom-weather.severe,
- #custom-weather.showyIcyDay,
+ #custom-weather.snowyIcyDay,
  #custom-weather.snowyIcyNight,
  #custom-weather.sunnyDay {
     background-color: @workspacesbackground2;
     font-size: 16px;
     color: @textcolor3;
-    border-radius: 5px 5px 5px 5px;
+    border-radius: 5px;
     padding: 2px 15px 0px 10px;
     margin: 3px 15px 3px 0px;
-    opacity:0.8;
+    opacity:1.0;
     border:1px solid @workspacesborder;
 }
 
@@ -110,6 +110,8 @@ tooltip label {
 window#waybar.empty #window {
     background-color:transparent;
 }
+
+
 
 /* -----------------------------------------------------
  * Taskbar
