@@ -1,19 +1,19 @@
 # All of the below are for colours
-dotfiles/.config/ml4w/cache/**
+.config/ml4w/cache/**
 **/wallpaper-generated/**
 **/*.png
 **/current_wallpaper*
-dotfiles/.config/waypaper/config.ini
-dotfiles/.config/hypr/colors.conf
-dotfiles/.config/kitty/colors-matugen.conf
-dotfiles/.config/rofi/colors.rasi
-dotfiles/.config/waybar/colors.css
-dotfiles/.config/wlogout/colors.css
-dotfiles/.config/swaync/colors.css
-dotfiles/.config/nwg-dock-hyprland/colors.css
-dotfiles/.config/ohmyposh/colors.json
-dotfiles/.config/ohmyposh/EDM115-newline.omp.json
-dotfiles/.config/ghostty/themes/matugen.conf
+.config/waypaper/config.ini
+.config/hypr/colors.conf
+.config/kitty/colors-matugen.conf
+.config/rofi/colors.rasi
+.config/waybar/colors.css
+.config/wlogout/colors.css
+.config/swaync/colors.css
+.config/nwg-dock-hyprland/colors.css
+.config/ohmyposh/colors.json
+.config/ohmyposh/EDM115-newline.omp.json
+.config/ghostty/themes/matugen.conf
 
 #for git stuff
 .config/.oh-my-zsh/.git/**
