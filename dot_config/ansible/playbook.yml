@@ -1,0 +1,22 @@
+- name: Bootstrap Arch
+  hosts: localhost
+  connection: local
+  become: true
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Install pacman packages
+      community.general.pacman:
+        name: "{{ pacman_packages_core + pacman_packages_hypr }}"
+        state: present
+        update_cache: true
+
+    - name: Install aur packages
+      become: false
+      ansible.builtin.command:
+        cmd: "paru -S --needed --noconfirm {{ aur_packages | join(' ') }}"
+      register: paru_result
+      changed_when: "'there is nothing to do' not in paru_result.stdout | lower"
+      when: aur_packages | length > 0

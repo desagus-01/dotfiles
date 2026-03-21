@@ -1,0 +1,29 @@
+pacman_packages_core:
+  - alacritty
+  - ansible
+  - bitwarden
+  - chezmoi
+  - firefox
+  - ghostty
+  - git
+  - hypridle
+  - hyprland
+  - hyprlock
+  - mako
+  - openssh
+  - swaync
+  - waybar
+  - zsh
+  - thunderbird
+  - localsend
+  - steam
+  - zoxide
+  - neovim
+
+pacman_packages_hypr:
+  - hyprpicker
+  - xdg-desktop-portal-hyprland
+
+aur_packages:
+  - zen-browser-bin
+  - spotify-launcher
