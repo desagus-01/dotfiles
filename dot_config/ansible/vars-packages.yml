@@ -1,0 +1,59 @@
+pacman_packages_core:
+  - alacritty
+  - ufw
+  - fail2ban
+  - ansible
+  - bitwarden
+  - chezmoi
+  - waypaper
+  - terraform
+  - firefox
+  - ghostty
+  - git
+  - mako
+  - skanpage
+  - sddm
+  - r
+  - okular
+  - nautilus
+  - networkmanager
+  - libreoffice-still
+  - lazygit
+  - openssh
+  - swaync
+  - waybar
+  - zsh
+  - thunderbird
+  - localsend
+  - steam
+  - zoxide
+  - neovim
+  - wlogout
+  - gufw
+  - gnome-calculator
+  - gnome-screenshot
+  - fprintd
+  - fingerprint-gui
+  - dbeaver
+  - cowsay
+  - asciiquarium
+
+pacman_packages_hypr:
+  - hyprpicker
+  - xdg-desktop-portal-hyprland
+  - hypridle
+  - hyprland
+  - hyprlock
+  - hyprshade
+
+aur_packages:
+  - zen-browser-bin
+  - sddm-silent-theme
+  - spotify-launcher
+  - wttrbar
+  - teams-for-linux
+  - ferdium-bin
+  - ani-cli
+  - anki-bin
+
+

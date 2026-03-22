@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# vars-packages.yml checksum:
+# {{ include "dot_config/ansible/vars-packages.yml" | sha256sum }}
+
+ANSIBLE_DIR="${HOME}/.config/ansible"
+
+cd "${ANSIBLE_DIR}"
+exec ansible-playbook packages.yml -K
