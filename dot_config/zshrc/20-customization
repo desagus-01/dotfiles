@@ -202,3 +202,128 @@ PY
 }
 
 alias pka='pkgadd'
+
+#pkrmv
+pkrmv() {
+  emulate -L zsh
+  setopt localoptions errexit pipefail
+
+  local pkg="${1:-}"
+  local chezmoi_source="${HOME}/.local/share/chezmoi"
+  local file="${chezmoi_source}/dot_config/ansible/vars-packages.yml"
+
+  if [[ -z "${pkg}" ]]; then
+    echo "Usage: pkrmv <package-name>" >&2
+    return 1
+  fi
+
+  if [[ ! -f "${file}" ]]; then
+    echo "Error: file not found: ${file}" >&2
+    return 1
+  fi
+
+  echo "Removing package '${pkg}' with paru..."
+  if ! paru -Rns --noconfirm "${pkg}"; then
+    echo "Error: failed to remove package '${pkg}'. Vars file not changed." >&2
+    return 1
+  fi
+
+  echo "Package '${pkg}' removed from system."
+
+  local py_result
+  py_result="$(
+    python3 - "${file}" "${pkg}" <<'PY'
+import sys
+from pathlib import Path
+
+try:
+    from ruamel.yaml import YAML
+    from ruamel.yaml.comments import CommentedSeq
+except ImportError:
+    print("ERROR:MISSING_RUAMEL")
+    sys.exit(3)
+
+file_path = Path(sys.argv[1])
+pkg = sys.argv[2]
+
+yaml = YAML()
+yaml.preserve_quotes = True
+yaml.width = 4096
+yaml.indent(mapping=2, sequence=4, offset=2)
+
+with file_path.open("r", encoding="utf-8") as f:
+    data = yaml.load(f)
+
+if data is None:
+    print("ERROR:EMPTY_YAML")
+    sys.exit(4)
+
+groups = ["pacman_packages_core", "pacman_packages_hypr", "aur_packages"]
+removed_from = []
+
+for group in groups:
+    if group not in data:
+        continue
+    current = data[group]
+    if current is None:
+        continue
+    if not isinstance(current, list):
+        print(f"ERROR:GROUP_NOT_LIST:{group}")
+        sys.exit(5)
+
+    clean_items = [str(x) for x in current]
+    if pkg in clean_items:
+        clean_items = [x for x in clean_items if x != pkg]
+        data[group] = CommentedSeq(clean_items)
+        removed_from.append(group)
+
+with file_path.open("w", encoding="utf-8") as f:
+    yaml.dump(data, f)
+
+if removed_from:
+    print("REMOVED:" + ",".join(removed_from))
+else:
+    print("NOT_FOUND")
+PY
+  )"
+
+  case "${py_result}" in
+    REMOVED:*)
+      local removed_groups="${py_result#REMOVED:}"
+      echo "Removed '${pkg}' from vars file group(s): ${removed_groups}."
+      ;;
+    NOT_FOUND)
+      echo "Package '${pkg}' was not found in vars file. Nothing to remove there."
+      ;;
+    ERROR:MISSING_RUAMEL)
+      echo "Error: ruamel.yaml is not installed. Install it with:" >&2
+      echo "  sudo pacman -S python-ruamel-yaml" >&2
+      echo "or:" >&2
+      echo "  python -m pip install --user ruamel.yaml" >&2
+      return 1
+      ;;
+    ERROR:EMPTY_YAML)
+      echo "Error: YAML file is empty: ${file}" >&2
+      return 1
+      ;;
+    ERROR:GROUP_NOT_LIST:*)
+      echo "Error: one of the package groups is not a YAML list in ${file}" >&2
+      return 1
+      ;;
+    *)
+      echo "Unexpected editor result: ${py_result}" >&2
+      return 1
+      ;;
+  esac
+
+  if chezmoi apply; then
+    echo "chezmoi apply succeeded."
+    return 0
+  fi
+
+  echo "chezmoi apply failed after removing '${pkg}'." >&2
+  echo "The package is already removed from the system. You may need to inspect your chezmoi state manually." >&2
+  return 1
+}
+
+alias pkrm='pkrmv'
