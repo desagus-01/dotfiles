@@ -37,6 +37,7 @@ pacman_packages_core:
   - dbeaver
   - cowsay
   - asciiquarium
+  - cowsay
 
 pacman_packages_hypr:
   - hyprpicker
