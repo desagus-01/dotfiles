@@ -35,10 +35,8 @@ pacman_packages_core:
   - fprintd
   - fingerprint-gui
   - dbeaver
-  - cowsay
   - asciiquarium
-  - cowsay
-
+  - python-ruamel-yaml
 pacman_packages_hypr:
   - hyprpicker
   - xdg-desktop-portal-hyprland
@@ -46,7 +44,6 @@ pacman_packages_hypr:
   - hyprland
   - hyprlock
   - hyprshade
-
 aur_packages:
   - zen-browser-bin
   - sddm-silent-theme

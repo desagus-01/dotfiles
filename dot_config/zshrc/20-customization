@@ -10,3 +10,168 @@ HISTSIZE=10000
 SAVEHIST=10000
 setopt appendhistory
 
+#pkgadd
+pkgadd() {
+  emulate -L zsh
+  setopt localoptions errexit pipefail
+
+  local pkg="${1:-}"
+  local group="${2:-pacman_packages_core}"
+  local chezmoi_source="${HOME}/.local/share/chezmoi"
+  local file="${chezmoi_source}/dot_config/ansible/vars-packages.yml"
+
+  if [[ -z "${pkg}" ]]; then
+    echo "Usage: pkgadd <package-name> [pacman_packages_core|pacman_packages_hypr|aur_packages]" >&2
+    return 1
+  fi
+
+  if [[ ! -f "${file}" ]]; then
+    echo "Error: file not found: ${file}" >&2
+    return 1
+  fi
+
+  case "${group}" in
+    pacman_packages_core|pacman_packages_hypr|aur_packages)
+      ;;
+    *)
+      echo "Error: invalid group '${group}'" >&2
+      return 1
+      ;;
+  esac
+
+  local py_result
+  py_result="$(
+    python3 - "${file}" "${group}" "${pkg}" <<'PY'
+import sys
+from pathlib import Path
+
+try:
+    from ruamel.yaml import YAML
+    from ruamel.yaml.comments import CommentedSeq
+except ImportError:
+    print("ERROR:MISSING_RUAMEL")
+    sys.exit(3)
+
+file_path = Path(sys.argv[1])
+group = sys.argv[2]
+pkg = sys.argv[3]
+
+yaml = YAML()
+yaml.preserve_quotes = True
+yaml.width = 4096
+yaml.indent(mapping=2, sequence=4, offset=2)
+
+with file_path.open("r", encoding="utf-8") as f:
+    data = yaml.load(f)
+
+if data is None:
+    print("ERROR:EMPTY_YAML")
+    sys.exit(4)
+
+if group not in data:
+    print("ERROR:GROUP_NOT_FOUND")
+    sys.exit(2)
+
+current = data[group]
+if current is None:
+    current = []
+
+if not isinstance(current, list):
+    print("ERROR:GROUP_NOT_LIST")
+    sys.exit(5)
+
+clean_items = [str(x) for x in current]
+
+if pkg in clean_items:
+    print("EXISTS")
+    sys.exit(0)
+
+clean_items.append(pkg)
+
+# Rebuild sequence to discard preserved blank-line/comment formatting
+data[group] = CommentedSeq(clean_items)
+
+with file_path.open("w", encoding="utf-8") as f:
+    yaml.dump(data, f)
+
+print("ADDED")
+PY
+  )"
+
+  case "${py_result}" in
+    EXISTS)
+      echo "Package '${pkg}' already exists in '${group}'. Nothing to do."
+      return 0
+      ;;
+    ADDED)
+      echo "Added '${pkg}' to '${group}'."
+      ;;
+    ERROR:MISSING_RUAMEL)
+      echo "Error: ruamel.yaml is not installed. Install it with:" >&2
+      echo "  sudo pacman -S python-ruamel-yaml" >&2
+      echo "or:" >&2
+      echo "  python -m pip install --user ruamel.yaml" >&2
+      return 1
+      ;;
+    ERROR:GROUP_NOT_FOUND)
+      echo "Error: group '${group}' not found in ${file}" >&2
+      return 1
+      ;;
+    ERROR:EMPTY_YAML)
+      echo "Error: YAML file is empty: ${file}" >&2
+      return 1
+      ;;
+    ERROR:GROUP_NOT_LIST)
+      echo "Error: group '${group}' is not a YAML list in ${file}" >&2
+      return 1
+      ;;
+    *)
+      echo "Unexpected editor result: ${py_result}" >&2
+      return 1
+      ;;
+  esac
+
+  if chezmoi apply; then
+    echo "chezmoi apply succeeded."
+    return 0
+  fi
+
+  echo "chezmoi apply failed. Rolling back '${pkg}' from '${group}'..." >&2
+
+  python3 - "${file}" "${group}" "${pkg}" <<'PY'
+import sys
+from pathlib import Path
+
+try:
+    from ruamel.yaml import YAML
+    from ruamel.yaml.comments import CommentedSeq
+except ImportError:
+    sys.exit(1)
+
+file_path = Path(sys.argv[1])
+group = sys.argv[2]
+pkg = sys.argv[3]
+
+yaml = YAML()
+yaml.preserve_quotes = True
+yaml.width = 4096
+yaml.indent(mapping=2, sequence=4, offset=2)
+
+with file_path.open("r", encoding="utf-8") as f:
+    data = yaml.load(f)
+
+if not data or group not in data or not isinstance(data[group], list):
+    sys.exit(1)
+
+clean_items = [str(x) for x in data[group] if str(x) != pkg]
+data[group] = CommentedSeq(clean_items)
+
+with file_path.open("w", encoding="utf-8") as f:
+    yaml.dump(data, f)
+PY
+
+  echo "Rollback complete. Package '${pkg}' removed from '${group}'." >&2
+  return 1
+}
+
+alias pka='pkgadd'
