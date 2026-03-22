@@ -16,12 +16,13 @@ pkgadd() {
   setopt localoptions errexit pipefail
 
   local pkg="${1:-}"
-  local group="${2:-pacman_packages_core}"
+  local group="${2:-}"
   local chezmoi_source="${HOME}/.local/share/chezmoi"
   local file="${chezmoi_source}/dot_config/ansible/vars-packages.yml"
+  local category
 
   if [[ -z "${pkg}" ]]; then
-    echo "Usage: pkgadd <package-name> [pacman_packages_core|pacman_packages_hypr|aur_packages]" >&2
+    echo "Usage: pkgadd <package-name> [pacman|aur|pacman_packages_core|aur_packages]" >&2
     return 1
   fi
 
@@ -30,14 +31,42 @@ pkgadd() {
     return 1
   fi
 
-  case "${group}" in
-    pacman_packages_core|pacman_packages_hypr|aur_packages)
-      ;;
-    *)
-      echo "Error: invalid group '${group}'" >&2
-      return 1
-      ;;
-  esac
+  if [[ -z "${group}" ]]; then
+    printf "Add '%s' to which category? [pacman/aur] (default: pacman): " "${pkg}"
+    read -r category
+    category="${category:l}"
+
+    case "${category}" in
+      ""|pacman|core|pacman_packages_core)
+        group="pacman_packages_core"
+        ;;
+      aur|aur_packages)
+        group="aur_packages"
+        ;;
+      *)
+        echo "Error: invalid category '${category}'. Use 'pacman' or 'aur'." >&2
+        return 1
+        ;;
+    esac
+  else
+    group="${group:l}"
+    case "${group}" in
+      pacman|core|pacman_packages_core)
+        group="pacman_packages_core"
+        ;;
+      aur|aur_packages)
+        group="aur_packages"
+        ;;
+      pacman_packages_hypr)
+        echo "Error: interactive mode only supports pacman core or AUR. Pass 'pacman_packages_hypr' explicitly only if you really want that." >&2
+        return 1
+        ;;
+      *)
+        echo "Error: invalid group '${group}'" >&2
+        return 1
+        ;;
+    esac
+  fi
 
   local py_result
   py_result="$(
@@ -87,8 +116,6 @@ if pkg in clean_items:
     sys.exit(0)
 
 clean_items.append(pkg)
-
-# Rebuild sequence to discard preserved blank-line/comment formatting
 data[group] = CommentedSeq(clean_items)
 
 with file_path.open("w", encoding="utf-8") as f:
