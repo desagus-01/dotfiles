@@ -37,6 +37,8 @@ pacman_packages_core:
   - dbeaver
   - asciiquarium
   - python-ruamel-yaml
+  - cowsay
+  - btop
 pacman_packages_hypr:
   - hyprpicker
   - xdg-desktop-portal-hyprland

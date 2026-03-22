@@ -10,19 +10,19 @@ HISTSIZE=10000
 SAVEHIST=10000
 setopt appendhistory
 
-#pkgadd
 pkgadd() {
   emulate -L zsh
   setopt localoptions errexit pipefail
 
-  local pkg="${1:-}"
-  local group="${2:-}"
   local chezmoi_source="${HOME}/.local/share/chezmoi"
   local file="${chezmoi_source}/dot_config/ansible/vars-packages.yml"
-  local category
+  local group=""
+  local category=""
+  local -a args pkgs
+  args=("$@")
 
-  if [[ -z "${pkg}" ]]; then
-    echo "Usage: pkgadd <package-name> [pacman|aur|pacman_packages_core|aur_packages]" >&2
+  if (( ${#args[@]} == 0 )); then
+    echo "Usage: pkgadd <pkg1> [pkg2 ...] [pacman|aur|pacman_packages_core|aur_packages]" >&2
     return 1
   fi
 
@@ -31,8 +31,28 @@ pkgadd() {
     return 1
   fi
 
+  local last_arg="${args[-1]:l}"
+  case "${last_arg}" in
+    pacman|core|pacman_packages_core)
+      group="pacman_packages_core"
+      pkgs=("${args[@]:0:${#args[@]}-1}")
+      ;;
+    aur|aur_packages)
+      group="aur_packages"
+      pkgs=("${args[@]:0:${#args[@]}-1}")
+      ;;
+    *)
+      pkgs=("${args[@]}")
+      ;;
+  esac
+
+  if (( ${#pkgs[@]} == 0 )); then
+    echo "Error: no package names provided." >&2
+    return 1
+  fi
+
   if [[ -z "${group}" ]]; then
-    printf "Add '%s' to which category? [pacman/aur] (default: pacman): " "${pkg}"
+    printf "Add package(s) '%s' to which category? [pacman/aur] (default: pacman): " "${(j:, :)pkgs}"
     read -r category
     category="${category:l}"
 
@@ -48,29 +68,11 @@ pkgadd() {
         return 1
         ;;
     esac
-  else
-    group="${group:l}"
-    case "${group}" in
-      pacman|core|pacman_packages_core)
-        group="pacman_packages_core"
-        ;;
-      aur|aur_packages)
-        group="aur_packages"
-        ;;
-      pacman_packages_hypr)
-        echo "Error: interactive mode only supports pacman core or AUR. Pass 'pacman_packages_hypr' explicitly only if you really want that." >&2
-        return 1
-        ;;
-      *)
-        echo "Error: invalid group '${group}'" >&2
-        return 1
-        ;;
-    esac
   fi
 
   local py_result
   py_result="$(
-    python3 - "${file}" "${group}" "${pkg}" <<'PY'
+    python3 - "${file}" "${group}" "${pkgs[@]}" <<'PY'
 import sys
 from pathlib import Path
 
@@ -83,7 +85,7 @@ except ImportError:
 
 file_path = Path(sys.argv[1])
 group = sys.argv[2]
-pkg = sys.argv[3]
+pkgs = sys.argv[3:]
 
 yaml = YAML()
 yaml.preserve_quotes = True
@@ -110,110 +112,88 @@ if not isinstance(current, list):
     sys.exit(5)
 
 clean_items = [str(x) for x in current]
+existing = set(clean_items)
 
-if pkg in clean_items:
-    print("EXISTS")
-    sys.exit(0)
+added = []
+skipped = []
 
-clean_items.append(pkg)
+for pkg in pkgs:
+    if pkg in existing:
+        skipped.append(pkg)
+    else:
+        clean_items.append(pkg)
+        existing.add(pkg)
+        added.append(pkg)
+
 data[group] = CommentedSeq(clean_items)
 
 with file_path.open("w", encoding="utf-8") as f:
     yaml.dump(data, f)
 
-print("ADDED")
+print("RESULT")
+print("ADDED:" + ",".join(added))
+print("SKIPPED:" + ",".join(skipped))
 PY
   )"
 
   case "${py_result}" in
-    EXISTS)
-      echo "Package '${pkg}' already exists in '${group}'. Nothing to do."
-      return 0
-      ;;
-    ADDED)
-      echo "Added '${pkg}' to '${group}'."
-      ;;
-    ERROR:MISSING_RUAMEL)
+    ERROR:MISSING_RUAMEL*)
       echo "Error: ruamel.yaml is not installed. Install it with:" >&2
       echo "  sudo pacman -S python-ruamel-yaml" >&2
       echo "or:" >&2
       echo "  python -m pip install --user ruamel.yaml" >&2
       return 1
       ;;
-    ERROR:GROUP_NOT_FOUND)
+    ERROR:GROUP_NOT_FOUND*)
       echo "Error: group '${group}' not found in ${file}" >&2
       return 1
       ;;
-    ERROR:EMPTY_YAML)
+    ERROR:EMPTY_YAML*)
       echo "Error: YAML file is empty: ${file}" >&2
       return 1
       ;;
-    ERROR:GROUP_NOT_LIST)
+    ERROR:GROUP_NOT_LIST*)
       echo "Error: group '${group}' is not a YAML list in ${file}" >&2
       return 1
       ;;
+    RESULT*)
+      ;;
     *)
-      echo "Unexpected editor result: ${py_result}" >&2
+      echo "Unexpected editor result:"
+      echo "${py_result}" >&2
       return 1
       ;;
   esac
+
+  local added_line skipped_line
+  added_line="$(printf '%s\n' "${py_result}" | awk -F: '/^ADDED:/{print $2}')"
+  skipped_line="$(printf '%s\n' "${py_result}" | awk -F: '/^SKIPPED:/{print $2}')"
+
+  [[ -n "${added_line}" ]] && echo "Added to '${group}': ${added_line//,/, }"
+  [[ -n "${skipped_line}" ]] && echo "Already present in '${group}': ${skipped_line//,/, }"
 
   if chezmoi apply; then
     echo "chezmoi apply succeeded."
     return 0
   fi
 
-  echo "chezmoi apply failed. Rolling back '${pkg}' from '${group}'..." >&2
-
-  python3 - "${file}" "${group}" "${pkg}" <<'PY'
-import sys
-from pathlib import Path
-
-try:
-    from ruamel.yaml import YAML
-    from ruamel.yaml.comments import CommentedSeq
-except ImportError:
-    sys.exit(1)
-
-file_path = Path(sys.argv[1])
-group = sys.argv[2]
-pkg = sys.argv[3]
-
-yaml = YAML()
-yaml.preserve_quotes = True
-yaml.width = 4096
-yaml.indent(mapping=2, sequence=4, offset=2)
-
-with file_path.open("r", encoding="utf-8") as f:
-    data = yaml.load(f)
-
-if not data or group not in data or not isinstance(data[group], list):
-    sys.exit(1)
-
-clean_items = [str(x) for x in data[group] if str(x) != pkg]
-data[group] = CommentedSeq(clean_items)
-
-with file_path.open("w", encoding="utf-8") as f:
-    yaml.dump(data, f)
-PY
-
-  echo "Rollback complete. Package '${pkg}' removed from '${group}'." >&2
+  echo "chezmoi apply failed after updating '${group}'." >&2
   return 1
 }
 
 alias pka='pkgadd'
 
-#pkrmv
 pkrmv() {
   emulate -L zsh
   setopt localoptions errexit pipefail
 
-  local pkg="${1:-}"
   local chezmoi_source="${HOME}/.local/share/chezmoi"
   local file="${chezmoi_source}/dot_config/ansible/vars-packages.yml"
+  local -a pkgs removed failed
+  pkgs=("$@")
 
-  if [[ -z "${pkg}" ]]; then
-    echo "Usage: pkrmv <package-name>" >&2
+  if (( ${#pkgs[@]} == 0 )); then
+    echo "Usage: pkrmv <pkg1> [pkg2 ...]" >&2
     return 1
   fi
 
@@ -222,17 +202,26 @@ pkrmv() {
     return 1
   fi
 
-  echo "Removing package '${pkg}' with paru..."
-  if ! paru -Rns --noconfirm "${pkg}"; then
-    echo "Error: failed to remove package '${pkg}'. Vars file not changed." >&2
+  local pkg
+  for pkg in "${pkgs[@]}"; do
+    echo "Removing package '${pkg}' with paru..."
+    if paru -Rns --noconfirm "${pkg}"; then
+      removed+=("${pkg}")
+      echo "Removed '${pkg}' from system."
+    else
+      failed+=("${pkg}")
+      echo "Failed to remove '${pkg}' from system." >&2
+    fi
+  done
+
+  if (( ${#removed[@]} == 0 )); then
+    echo "No packages were removed successfully. Vars file not changed." >&2
     return 1
   fi
 
-  echo "Package '${pkg}' removed from system."
-
   local py_result
   py_result="$(
-    python3 - "${file}" "${pkg}" <<'PY'
+    python3 - "${file}" "${removed[@]}" <<'PY'
 import sys
 from pathlib import Path
 
@@ -244,7 +233,7 @@ except ImportError:
     sys.exit(3)
 
 file_path = Path(sys.argv[1])
-pkg = sys.argv[2]
+pkgs_to_remove = set(sys.argv[2:])
 
 yaml = YAML()
 yaml.preserve_quotes = True
@@ -259,50 +248,46 @@ if data is None:
     sys.exit(4)
 
 groups = ["pacman_packages_core", "pacman_packages_hypr", "aur_packages"]
-removed_from = []
+removed_map = {}
 
 for group in groups:
     if group not in data:
         continue
     current = data[group]
     if current is None:
+        data[group] = CommentedSeq()
         continue
     if not isinstance(current, list):
         print(f"ERROR:GROUP_NOT_LIST:{group}")
         sys.exit(5)
 
     clean_items = [str(x) for x in current]
-    if pkg in clean_items:
-        clean_items = [x for x in clean_items if x != pkg]
+    found = [x for x in clean_items if x in pkgs_to_remove]
+    if found:
+        clean_items = [x for x in clean_items if x not in pkgs_to_remove]
         data[group] = CommentedSeq(clean_items)
-        removed_from.append(group)
+        removed_map[group] = found
+    else:
+        data[group] = CommentedSeq(clean_items)
 
 with file_path.open("w", encoding="utf-8") as f:
     yaml.dump(data, f)
 
-if removed_from:
-    print("REMOVED:" + ",".join(removed_from))
-else:
-    print("NOT_FOUND")
+print("RESULT")
+for group, items in removed_map.items():
+    print(f"{group}:" + ",".join(items))
 PY
   )"
 
   case "${py_result}" in
-    REMOVED:*)
-      local removed_groups="${py_result#REMOVED:}"
-      echo "Removed '${pkg}' from vars file group(s): ${removed_groups}."
-      ;;
-    NOT_FOUND)
-      echo "Package '${pkg}' was not found in vars file. Nothing to remove there."
-      ;;
-    ERROR:MISSING_RUAMEL)
+    ERROR:MISSING_RUAMEL*)
       echo "Error: ruamel.yaml is not installed. Install it with:" >&2
       echo "  sudo pacman -S python-ruamel-yaml" >&2
       echo "or:" >&2
       echo "  python -m pip install --user ruamel.yaml" >&2
       return 1
       ;;
-    ERROR:EMPTY_YAML)
+    ERROR:EMPTY_YAML*)
       echo "Error: YAML file is empty: ${file}" >&2
       return 1
       ;;
@@ -310,20 +295,29 @@ PY
       echo "Error: one of the package groups is not a YAML list in ${file}" >&2
       return 1
       ;;
+    RESULT*)
+      ;;
     *)
-      echo "Unexpected editor result: ${py_result}" >&2
+      echo "Unexpected editor result:"
+      echo "${py_result}" >&2
       return 1
       ;;
   esac
 
-  if chezmoi apply; then
-    echo "chezmoi apply succeeded."
-    return 0
+  echo "Updated vars file for removed packages."
+
+  if (( ${#failed[@]} > 0 )); then
+    echo "Failed removals: ${failed[*]}" >&2
   fi
 
-  echo "chezmoi apply failed after removing '${pkg}'." >&2
-  echo "The package is already removed from the system. You may need to inspect your chezmoi state manually." >&2
-  return 1
+  if chezmoi apply; then
+    echo "chezmoi apply succeeded."
+  else
+    echo "chezmoi apply failed after removing packages." >&2
+    return 1
+  fi
+
+  (( ${#failed[@]} == 0 ))
 }
 
 alias pkrm='pkrmv'
