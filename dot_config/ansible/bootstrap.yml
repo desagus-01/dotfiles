@@ -1,0 +1,232 @@
+- name: Bootstrap CachyOS
+  hosts: localhost
+  connection: local
+  become: true
+  gather_facts: false
+
+  vars_files:
+    - vars.yml
+
+  tasks:
+    - name: Install pacman packages
+      tags: [packages]
+      community.general.pacman:
+        name: "{{ pacman_packages_core + pacman_packages_hypr }}"
+        state: present
+        update_cache: true
+
+    - name: Create aur_builder user
+      tags: [aur]
+      ansible.builtin.user:
+        name: aur_builder
+        state: present
+        create_home: true
+        group: wheel
+
+    - name: Allow aur_builder to run pacman without a password
+      tags: [aur]
+      ansible.builtin.lineinfile:
+        path: /etc/sudoers.d/11-install-aur_builder
+        line: "aur_builder ALL=(ALL) NOPASSWD: /usr/bin/pacman"
+        create: true
+        mode: "0440"
+        validate: "visudo -cf %s"
+
+    - name: Check whether paru is installed
+      tags: [aur]
+      ansible.builtin.command: which paru
+      register: paru_check
+      changed_when: false
+      failed_when: false
+
+    - name: Fail if paru is not installed
+      tags: [aur]
+      ansible.builtin.fail:
+        msg: "paru is required before installing AUR packages."
+      when: paru_check.rc != 0
+
+    - name: Install AUR packages using paru
+      tags: [aur]
+      kewlfft.aur.aur:
+        use: paru
+        name: "{{ aur_packages }}"
+        state: present
+      become: true
+      become_user: aur_builder
+
+    - name: Configure SDDM theme
+      tags: [sddm]
+      ansible.builtin.copy:
+        dest: /etc/sddm.conf.d/theme.conf
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          [Theme]
+          Current={{ sddm_theme_name }}
+
+    - name: Check for Hyprland session file
+      tags: [hyprland]
+      ansible.builtin.stat:
+        path: /usr/share/wayland-sessions/hyprland.desktop
+      register: hyprland_session
+
+    - name: Create fallback Hyprland session file if missing
+      tags: [hyprland]
+      ansible.builtin.copy:
+        dest: /usr/share/wayland-sessions/hyprland.desktop
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          [Desktop Entry]
+          Name=Hyprland
+          Comment=Hyprland Wayland Compositor
+          Exec=Hyprland
+          Type=Application
+      when: not hyprland_session.stat.exists
+
+    - name: Ensure fail2ban config directory exists
+      tags: [fail2ban]
+      ansible.builtin.file:
+        path: /etc/fail2ban
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
+    - name: Configure fail2ban jail.local
+      tags: [fail2ban]
+      ansible.builtin.copy:
+        dest: /etc/fail2ban/jail.local
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          [DEFAULT]
+          bantime = {{ fail2ban_bantime }}
+          findtime = {{ fail2ban_findtime }}
+          maxretry = {{ fail2ban_maxretry }}
+          ignoreip = {{ fail2ban_ignoreip | join(' ') }}
+          sender = {{ fail2ban_sender }}
+
+          [sshd]
+          enabled = true
+          backend = systemd
+      notify: Restart fail2ban
+
+    - name: Set UFW default incoming policy
+      tags: [ufw]
+      community.general.ufw:
+        direction: incoming
+        policy: "{{ ufw_default_incoming_policy }}"
+
+    - name: Set UFW default outgoing policy
+      tags: [ufw]
+      community.general.ufw:
+        direction: outgoing
+        policy: "{{ ufw_default_outgoing_policy }}"
+
+    - name: Allow all traffic from trusted subnets
+      tags: [ufw]
+      community.general.ufw:
+        rule: allow
+        src: "{{ item }}"
+      loop: "{{ ufw_allow_from_subnets }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: Allow simple port rules
+      tags: [ufw]
+      community.general.ufw:
+        rule: allow
+        port: "{{ item.port }}"
+        proto: "{{ item.proto }}"
+        comment: "{{ item.comment }}"
+      loop: "{{ ufw_allow_ports }}"
+      loop_control:
+        label: "{{ item.port }}/{{ item.proto }} - {{ item.comment }}"
+
+    - name: Allow source-restricted port rules
+      tags: [ufw]
+      community.general.ufw:
+        rule: allow
+        src: "{{ item.src }}"
+        port: "{{ item.port }}"
+        proto: "{{ item.proto }}"
+        comment: "{{ item.comment }}"
+      loop: "{{ ufw_allow_src_port_rules }}"
+      loop_control:
+        label: "{{ item.src }} -> {{ item.port }}/{{ item.proto }} - {{ item.comment }}"
+
+    - name: Allow app profiles
+      tags: [ufw]
+      community.general.ufw:
+        rule: allow
+        name: "{{ item }}"
+      loop: "{{ ufw_allow_app_profiles }}"
+      loop_control:
+        label: "{{ item }}"
+
+    - name: Allow multicast rules
+      tags: [ufw]
+      community.general.ufw:
+        rule: allow
+        src: "{{ item.src }}"
+        port: "{{ item.port }}"
+        proto: "{{ item.proto }}"
+      loop: "{{ ufw_allow_multicast_rules }}"
+      loop_control:
+        label: "{{ item.src }} -> {{ item.port }}/{{ item.proto }}"
+
+    - name: Allow interface-specific rules
+      tags: [ufw]
+      community.general.ufw:
+        rule: allow
+        direction: in
+        interface: "{{ item.interface }}"
+        port: "{{ item.port }}"
+        proto: "{{ item.proto }}"
+      loop: "{{ ufw_allow_interface_rules }}"
+      loop_control:
+        label: "{{ item.interface }} -> {{ item.port }}/{{ item.proto }}"
+
+    - name: Enable UFW
+      tags: [ufw]
+      community.general.ufw:
+        state: enabled
+
+    - name: Enable NetworkManager
+      tags: [services, network]
+      ansible.builtin.systemd_service:
+        name: NetworkManager
+        enabled: true
+        state: started
+
+    - name: Enable sshd
+      tags: [services, ssh]
+      ansible.builtin.systemd_service:
+        name: sshd
+        enabled: true
+        state: started
+
+    - name: Enable fail2ban
+      tags: [services, fail2ban]
+      ansible.builtin.systemd_service:
+        name: fail2ban
+        enabled: true
+        state: started
+
+    - name: Enable SDDM
+      tags: [services, sddm]
+      ansible.builtin.systemd_service:
+        name: sddm
+        enabled: true
+        state: started
+
+  handlers:
+    - name: Restart fail2ban
+      tags: [fail2ban]
+      ansible.builtin.systemd_service:
+        name: fail2ban
+        state: restarted

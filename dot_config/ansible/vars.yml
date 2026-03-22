@@ -1,15 +1,24 @@
 pacman_packages_core:
   - alacritty
+  - ufw
+  - fail2ban
   - ansible
   - bitwarden
   - chezmoi
+  - waypaper
+  - terraform
   - firefox
   - ghostty
   - git
-  - hypridle
-  - hyprland
-  - hyprlock
   - mako
+  - skanpage
+  - sddm
+  - r
+  - okular
+  - nautilus
+  - networkmanager
+  - libreoffice-still
+  - lazygit
   - openssh
   - swaync
   - waybar
@@ -19,11 +28,80 @@ pacman_packages_core:
   - steam
   - zoxide
   - neovim
+  - wlogout
+  - gufw
+  - gnome-calculator
+  - gnome-screenshot
+  - fprintd
+  - fingerprint-gui
+  - dbeaver
+  - cowsay
+  - asciiquarium
 
 pacman_packages_hypr:
   - hyprpicker
   - xdg-desktop-portal-hyprland
+  - hypridle
+  - hyprland
+  - hyprlock
+  - hyprshade
 
 aur_packages:
   - zen-browser-bin
+  - sddm-silent-theme
   - spotify-launcher
+  - wttrbar
+  - teams-for-linux
+  - ferdium-bin
+  - ani-cli
+  - anki-bin
+
+sddm_theme_name: "silent"
+
+ufw_default_incoming_policy: "deny"
+ufw_default_outgoing_policy: "allow"
+
+ufw_allow_from_subnets: []
+
+ufw_allow_ports:
+  - port: "53317"
+    proto: "tcp"
+    comment: "LocalSend TCP"
+  - port: "53317"
+    proto: "udp"
+    comment: "LocalSend UDP"
+  - port: "7236"
+    proto: "tcp"
+    comment: "Miracast RTSP control"
+
+ufw_allow_src_port_rules:
+  - src: "192.168.0.0/24"
+    port: "22"
+    proto: "tcp"
+    comment: "SSH from LAN"
+
+ufw_allow_app_profiles: []
+
+ufw_allow_multicast_rules:
+  - src: "224.0.0.252"
+    port: "5355"
+    proto: "udp"
+    comment: "LLMNR IPv4"
+  - src: "ff02::1:3"
+    port: "5355"
+    proto: "udp"
+    comment: "LLMNR IPv6"
+
+ufw_allow_interface_rules:
+  - interface: "p2p-dev-wlan0-0"
+    port: "67:68"
+    proto: "udp"
+    comment: "DHCP for Miracast"
+
+fail2ban_bantime: "10m"
+fail2ban_findtime: "10m"
+fail2ban_maxretry: 5
+fail2ban_sender: "fail2ban@localhost"
+fail2ban_ignoreip:
+  - "127.0.0.1/8"
+  - "::1"
