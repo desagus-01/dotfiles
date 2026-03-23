@@ -33,8 +33,8 @@ pacman_packages_core:
   - gnome-calculator
   - gnome-screenshot
   - fprintd
-  - fingerprint-gui
   - dbeaver
+  - anki
   - asciiquarium
   - python-ruamel-yaml
   - cowsay
@@ -48,10 +48,10 @@ pacman_packages_hypr:
   - hyprshade
 aur_packages:
   - zen-browser-bin
+  - fingerprint-gui
   - sddm-silent-theme
   - spotify-launcher
   - wttrbar
   - teams-for-linux
-  - ferdium-bin
+  - ferdium
   - ani-cli
-  - anki-bin
