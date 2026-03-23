@@ -1,4 +1,3 @@
-
 #!/usr/bin/env bash
 set -euo pipefail
 
@@ -36,7 +35,7 @@ wallpapereffect="$HOME/.config/ml4w/settings/wallpaper-effect.sh"
 
 fullwallpaper="$ml4w_cache_folder/wallpaper.png"
 togglefile="$ml4w_cache_folder/.wallpaper_toggle"
-statefile="$ml4w_cache_folder/.wallpaper_state"  # stores cache key from last run
+statefile="$ml4w_cache_folder/.wallpaper_state"
 
 # -----------------------------------------------------
 # Read blur + effect
@@ -79,7 +78,6 @@ if [ "$effect" != "off" ]; then
   else
     _writeLog "Generate new cached wallpaper $effect-$wallpaperfilename with effect $effect"
     notify-send --replace-id=1 "Using wallpaper effect $effect..." "with image $wallpaperfilename" -h int:value:33
-    # expected to write $used_wallpaper
     source "$HOME/.config/hypr/effects/wallpaper/$effect"
   fi
 else
@@ -125,71 +123,82 @@ apply_ipc() {
 }
 
 # -----------------------------------------------------
-# Always re-apply (fast), but only regenerate assets if key changed
+# Always re-apply, only regenerate heavy assets if needed
 # -----------------------------------------------------
-
-# Toggle apply filename so hyprpaper reloads even if path-based caching happens
 toggle="0"
 [ -f "$togglefile" ] && toggle="$(cat "$togglefile")"
 [ "$toggle" = "0" ] && toggle="1" || toggle="0"
 echo "$toggle" > "$togglefile"
 applywallpaper="$ml4w_cache_folder/wallpaper_apply_${toggle}.png"
 
-# If nothing changed, just copy the existing full wallpaper (cheap) and apply
+needs_regen=1
+
 if [ "$cache_key" = "$prev_key" ] && [ -f "$fullwallpaper" ]; then
-  _writeLog "Wallpaper state unchanged; doing fast re-apply only"
+  needs_regen=0
+  _writeLog "Wallpaper state unchanged; doing fast re-apply"
   cp -f "$fullwallpaper" "$applywallpaper"
-  apply_ipc "$applywallpaper"
-  _writeLog "Applied wallpaper via hyprpaper IPC (fast path)"
-  exit 0
+else
+  _writeLog "Updating full wallpaper cache: $fullwallpaper"
+  cp -f "$used_wallpaper" "$fullwallpaper"
+  cp -f "$fullwallpaper" "$applywallpaper"
+fi
+
+apply_ipc "$applywallpaper"
+_writeLog "Applied wallpaper via hyprpaper IPC"
+
+# -----------------------------------------------------
+# Create square wallpaper (only when key changed or missing)
+# -----------------------------------------------------
+if [ "$needs_regen" = "1" ] || [ ! -f "$squarewallpaper" ]; then
+  _writeLog "Generate square wallpaper"
+  magick "$used_wallpaper" -gravity Center -extent 1:1 "$squarewallpaper"
+  cp -f "$squarewallpaper" "$generatedversions/square-$wallpaperfilename.png"
+else
+  _writeLog "Square wallpaper unchanged; reusing cached version"
 fi
 
 # -----------------------------------------------------
-# Full path: update full cache + apply file
-# -----------------------------------------------------
-_writeLog "Updating full wallpaper cache: $fullwallpaper"
-cp -f "$used_wallpaper" "$fullwallpaper"
-cp -f "$fullwallpaper" "$applywallpaper"
-
-apply_ipc "$applywallpaper"
-_writeLog "Applied wallpaper via hyprpaper IPC (no restart)"
-
-# -----------------------------------------------------
-# Create square wallpaper (only when key changed)
-# -----------------------------------------------------
-_writeLog "Generate square wallpaper"
-magick "$used_wallpaper" -gravity Center -extent 1:1 "$squarewallpaper"
-cp -f "$squarewallpaper" "$generatedversions/square-$wallpaperfilename.png"
-
-# -----------------------------------------------------
-# Detect Theme + run matugen (only when key changed)
+# Detect Theme + run matugen (always run)
 # -----------------------------------------------------
 SETTINGS_FILE="$HOME/.config/gtk-3.0/settings.ini"
 THEME_PREF="$(grep -E '^gtk-application-prefer-dark-theme=' "$SETTINGS_FILE" 2>/dev/null | cut -d= -f2 | tr -d '[:space:]')"
 
-if command -v matugen >/dev/null 2>&1; then
+MATUGEN_BIN="${MATUGEN_BIN:-$(command -v matugen 2>/dev/null || true)}"
+
+if [ -z "$MATUGEN_BIN" ]; then
+  for candidate in "$HOME/.cargo/bin/matugen" "$HOME/.local/bin/matugen" "/usr/bin/matugen"; do
+    if [ -x "$candidate" ]; then
+      MATUGEN_BIN="$candidate"
+      break
+    fi
+  done
+fi
+
+if [ -n "$MATUGEN_BIN" ] && [ -x "$MATUGEN_BIN" ]; then
   if [ "${THEME_PREF:-0}" = "1" ]; then
-    matugen image "$squarewallpaper" -m dark
+    _writeLog "Running matugen in dark mode via $MATUGEN_BIN"
+    "$MATUGEN_BIN" image "$squarewallpaper" -m dark
   else
-    matugen image "$squarewallpaper" -m light
+    _writeLog "Running matugen in light mode via $MATUGEN_BIN"
+    "$MATUGEN_BIN" image "$squarewallpaper" -m light
   fi
 else
-  _writeLog "ERROR: matugen not found in PATH"
+  _writeLog "ERROR: matugen not found in PATH or common locations"
 fi
 
 # -----------------------------------------------------
-# Blur wallpaper (only when key changed; keep cache behaviour)
+# Blur wallpaper (regenerate only when needed)
 # -----------------------------------------------------
 blur_cache="$generatedversions/blur-$blur-$effect-$wallpaperfilename.png"
-if [ -f "$blur_cache" ] && [ "$force_generate" = "0" ] && [ "$use_cache" = "1" ]; then
-  _writeLog "Use cached blurred wallpaper $(basename "$blur_cache")"
-else
+if [ "$needs_regen" = "1" ] || [ ! -f "$blur_cache" ] || [ "$force_generate" = "1" ] || [ "$use_cache" != "1" ]; then
   _writeLog "Generate blurred wallpaper $(basename "$blur_cache") with blur $blur"
   magick "$used_wallpaper" -resize 75% "$blurredwallpaper"
   if [ "$blur" != "0x0" ]; then
     magick "$blurredwallpaper" -blur "$blur" "$blurredwallpaper"
   fi
   cp -f "$blurredwallpaper" "$blur_cache"
+else
+  _writeLog "Use cached blurred wallpaper $(basename "$blur_cache")"
 fi
 cp -f "$blur_cache" "$blurredwallpaper"
 
@@ -199,7 +208,7 @@ cp -f "$blur_cache" "$blurredwallpaper"
 echo "* { current-image: url(\"$blurredwallpaper\", height); }" >"$rasifile"
 
 # -----------------------------------------------------
-# Reload UI bits (only when key changed)
+# Reload UI bits
 # -----------------------------------------------------
 pkill -USR2 waybar 2>/dev/null || true
 sleep 0.1
@@ -210,4 +219,3 @@ swaync-client -rs
 # -----------------------------------------------------
 echo "$cache_key" >"$statefile"
 _writeLog "Saved wallpaper state key"
-

@@ -3,7 +3,6 @@
 **/wallpaper-generated/**
 **/*.png
 **/current_wallpaper*
-.config/waypaper/config.ini
 .config/hypr/colors.conf
 .config/kitty/colors-matugen.conf
 .config/rofi/colors.rasi
