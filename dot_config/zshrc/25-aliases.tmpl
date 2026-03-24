@@ -15,7 +15,7 @@ alias shutdown='systemctl poweroff'
 alias n='$EDITOR'
 alias wifi='nmtui'
 {{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" }}
-export OLLAMA_MODEL="qwen3-code:30b"
+export OLLAMA_MODEL="qwen3-coder:30b"
 {{- else }}
 export OLLAMA_MODEL="qwen2.5-coder:7b"
 {{- end }}
