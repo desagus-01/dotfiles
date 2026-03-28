@@ -40,7 +40,6 @@ pacman_packages_core:
   - cowsay
   - btop
   - npm
-  - bitwarden-cli
 pacman_packages_hypr:
   - hyprpicker
   - xdg-desktop-portal-hyprland
