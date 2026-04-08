@@ -90,7 +90,7 @@ case "$cmd" in
     fi
 
     PACMAN_FLAGS=()
-    PARU_FLAGS=()
+    PARU_FLAGS=(--news)
     if [[ "$NOCONFIRM" -eq 1 ]]; then
       PACMAN_FLAGS+=(--noconfirm)
       PARU_FLAGS+=(--noconfirm)
