@@ -8,13 +8,6 @@
     - vars-packages.yml
 
   tasks:
-    - name: Install pacman packages
-      tags: [packages]
-      community.general.pacman:
-        name: "{{ pacman_packages_core + pacman_packages_hypr }}"
-        state: present
-        update_cache: true
-
     - name: Create aur_builder user
       tags: [aur]
       ansible.builtin.user:
@@ -45,13 +38,22 @@
         msg: "paru is required before installing AUR packages."
       when: paru_check.rc != 0
 
+    - name: Full system update
+      tags: [update]
+      ansible.builtin.command: paru -Syu --noconfirm
+      become_user: aur_builder
+      changed_when: true
+
+    - name: Install pacman packages
+      tags: [packages]
+      community.general.pacman:
+        name: "{{ pacman_packages_core + pacman_packages_hypr }}"
+        state: present
+
     - name: Install AUR packages using paru
       tags: [aur]
       kewlfft.aur.aur:
         use: paru
         name: "{{ aur_packages }}"
-        state: present
-      become: true
+        state: latest
       become_user: aur_builder
-
-

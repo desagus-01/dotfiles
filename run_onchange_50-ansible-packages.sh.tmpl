@@ -7,4 +7,4 @@ set -euo pipefail
 ANSIBLE_DIR="${HOME}/.config/ansible"
 
 cd "${ANSIBLE_DIR}"
-exec ansible-playbook packages.yml -K -vv
+ansible-playbook packages.yml -K -vv
