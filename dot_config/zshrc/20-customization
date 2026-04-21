@@ -322,11 +322,3 @@ PY
 
 alias pkrm='pkrmv'
 
-# ---------------------------------------------------------------------------
-# Git sync check — run in background on shell start (throttled to once/hour)
-# ---------------------------------------------------------------------------
-_git_sync_check_script="$HOME/.config/scripts/git_sync_check.sh"
-if [[ -x "$_git_sync_check_script" ]]; then
-  ("$_git_sync_check_script" &) &>/dev/null
-fi
-unset _git_sync_check_script
