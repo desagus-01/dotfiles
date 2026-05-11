@@ -9,6 +9,7 @@ require("conf_lua.decorations")
 require("conf_lua.layout")
 require("conf_lua.misc")
 require("conf_lua.keybindings")
+require("conf_lua.animations")
 -- Nested test binds
 -- ~/.config/hypr/hyprland-test.lua
 
