@@ -1,0 +1,15 @@
+
+
+{{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" -}}
+hl.config({ input = {
+	kb_layout = "us",
+	kb_options = "altwin:swap_lalt_lwin",
+} })
+
+{{- else -}}
+hl.config({ input = {
+	kb_layout = "us",
+} })
+
+{{- end -}}
+
