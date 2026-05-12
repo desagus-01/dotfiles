@@ -1,0 +1,30 @@
+{{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" -}}
+local hypr_globals = require("hypr_globals")
+
+hl.monitor({
+	output = hypr_globals.vertical_monitor_name,
+	mode = "preferred",
+	position = "auto-center-left",
+	scale = "auto",
+	transform = 3,
+})
+
+hl.monitor({
+	output = hypr_globals.horizontal_monitor_name,
+	mode = "preferred",
+	position = "auto-right",
+	scale = "auto",
+})
+
+
+{{- else -}}
+
+hl.monitor({
+	output = "",
+	mode = "preferred",
+	position = "auto",
+	scale = "auto",
+})
+
+
+{{- end -}}

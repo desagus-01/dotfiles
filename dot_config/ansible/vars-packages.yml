@@ -41,6 +41,7 @@ pacman_packages_core:
   - btop
   - npm
   - bitwarden-cli
+  - awww
 pacman_packages_hypr:
   - hyprpicker
   - xdg-desktop-portal-hyprland
