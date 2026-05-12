@@ -36,6 +36,7 @@ pacman_packages_core:
   - dbeaver
   - anki
   - asciiquarium
+  - spotify-launcher
   - python-ruamel-yaml
   - cowsay
   - btop
@@ -53,7 +54,6 @@ aur_packages:
   - zen-browser-bin
   - fingerprint-gui
   - sddm-silent-theme
-  - spotify-launcher
   - wttrbar
   - teams-for-linux
   - webapp-manager
