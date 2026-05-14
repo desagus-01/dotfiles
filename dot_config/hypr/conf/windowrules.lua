@@ -1,15 +1,15 @@
 -- Fix XWayland dragging / focus bugs
-hl.window_rule({
-	name = "fix-xwayland-no-focus",
-	match = { xwayland = true },
-	no_focus = true,
-})
-hl.window_rule({
-	name = "fix-xwayland-float",
-	match = { xwayland = true },
-	float = true,
-})
-
+-- hl.window_rule({
+-- 	name = "fix-xwayland-no-focus",
+-- 	match = { xwayland = true },
+-- 	no_focus = true,
+-- })
+-- hl.window_rule({
+-- 	name = "fix-xwayland-float",
+-- 	match = { xwayland = true },
+-- 	float = true,
+-- })
+--
 -- hyprland-run window
 hl.window_rule({
 	name = "move-hyprland-run",
