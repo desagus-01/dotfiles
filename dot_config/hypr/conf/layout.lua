@@ -6,6 +6,7 @@ hl.config({
 		workspace_back_and_forth = true,
 		allow_workspace_cycles = true,
 	},
+	general = { gaps_in = 5, gaps_out = 7, border_size = 4, resize_on_border = true },
 })
 
 -- keybinding rule
@@ -36,8 +37,6 @@ local function update_border_colors(layout)
 
 	hl.config({
 		general = {
-			border_size = 2,
-
 			col = {
 				active_border = {
 					colors = active_colors,
