@@ -1,3 +1,4 @@
+
 local globals = require("hypr_globals")
 -- Main modifier / paths
 local home = os.getenv("HOME")
@@ -281,5 +282,4 @@ hl.bind("XF86MonBrightnessDown", sh(HYPRSCRIPTS .. "/hypr_brightness.sh -"), { l
 hl.bind("XF86MonBrightnessUp", sh("brightnessctl set 10%+"), { locked = true, repeating = true, description = "Increase brightness" })
 hl.bind("XF86MonBrightnessDown", sh("brightnessctl set 10%-"), { locked = true, repeating = true, description = "Decrease brightness" })
 {{- end }}
-
 
