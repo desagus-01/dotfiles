@@ -1,6 +1,6 @@
 
+local globals = require("hypr_globals")
 -- Main modifier / paths
-local mainMod = "SUPER"
 local home = os.getenv("HOME")
 
 local HYPRSCRIPTS = home .. "/.config/hypr/scripts"
@@ -15,44 +15,52 @@ end
 -- Applications
 -- -----------------------------------------------------
 
-hl.bind(mainMod .. " + RETURN", sh("ghostty"), { description = "Open terminal" })
-hl.bind(mainMod .. " + B", sh("zen-browser"), { description = "Open browser" })
-hl.bind(mainMod .. " + S", sh("spotify-launcher"), { description = "Open Spotify" })
-hl.bind(mainMod .. " + E", sh(home .. "/.config/ml4w/settings/filemanager.sh"), { description = "Open file manager" })
-hl.bind(mainMod .. " + CTRL + C", sh(home .. "/.config/ml4w/settings/calculator.sh"), { description = "Open calculator" })
+hl.bind(globals.main_mod .. " + RETURN", sh("ghostty"), { description = "Open terminal" })
+hl.bind(globals.main_mod .. " + B", sh("zen-browser"), { description = "Open browser" })
+hl.bind(globals.main_mod .. " + S", sh("spotify-launcher"), { description = "Open Spotify" })
+hl.bind(
+	globals.main_mod .. " + E",
+	sh(home .. "/.config/ml4w/settings/filemanager.sh"),
+	{ description = "Open file manager" }
+)
+hl.bind(
+	globals.main_mod .. " + CTRL + C",
+	sh(home .. "/.config/ml4w/settings/calculator.sh"),
+	{ description = "Open calculator" }
+)
 
 -- -----------------------------------------------------
 -- Windows
 -- -----------------------------------------------------
 
-hl.bind(mainMod .. " + Q", hl.dsp.window.close(), { description = "Close active window" })
+hl.bind(globals.main_mod .. " + Q", hl.dsp.window.close(), { description = "Close active window" })
 
 -- Preserves your old behaviour: kill the active window's process via PID.
 hl.bind(
-	mainMod .. " + SHIFT + Q",
+	globals.main_mod .. " + SHIFT + Q",
 	sh("hyprctl activewindow | grep pid | tr -d 'pid:' | xargs kill"),
 	{ description = "Kill active window process" }
 )
 
 hl.bind(
-	mainMod .. " + F",
+	globals.main_mod .. " + F",
 	hl.dsp.window.fullscreen({ mode = "fullscreen", action = "toggle" }),
 	{ description = "Toggle fullscreen" }
 )
 
 hl.bind(
-	mainMod .. " + M",
+	globals.main_mod .. " + M",
 	hl.dsp.window.fullscreen({ mode = "maximized", action = "toggle" }),
 	{ description = "Toggle maximized" }
 )
 
-hl.bind(mainMod .. " + T", hl.dsp.window.float({ action = "toggle" }), { description = "Toggle floating" })
+hl.bind(globals.main_mod .. " + T", hl.dsp.window.float({ action = "toggle" }), { description = "Toggle floating" })
 
 -- NOTE: I could not find a clean new Lua dispatcher for old `workspaceopt allfloat`.
 -- This keeps your old command as a compatibility fallback. Run `hyprctl configerrors`
 -- and test this one manually after reload.
 hl.bind(
-	mainMod .. " + SHIFT + T",
+	globals.main_mod .. " + SHIFT + T",
 	sh("hyprctl dispatch workspaceopt allfloat"),
 	{ description = "Toggle all windows floating on workspace - legacy fallback" }
 )
@@ -61,25 +69,53 @@ hl.bind(
 -- WARNING: this would duplicate SUPER + S, which currently opens Spotify.
 -- hl.bind(mainMod .. " + S", hl.dsp.layout("togglesplit"), { description = "Toggle split" })
 
-hl.bind(mainMod .. " + H", hl.dsp.focus({ direction = "l" }), { description = "Move focus left" })
-hl.bind(mainMod .. " + L", hl.dsp.focus({ direction = "r" }), { description = "Move focus right" })
-hl.bind(mainMod .. " + K", hl.dsp.focus({ direction = "u" }), { description = "Move focus up" })
-hl.bind(mainMod .. " + J", hl.dsp.focus({ direction = "d" }), { description = "Move focus down" })
+hl.bind(globals.main_mod .. " + H", hl.dsp.focus({ direction = "l" }), { description = "Move focus left" })
+hl.bind(globals.main_mod .. " + L", hl.dsp.focus({ direction = "r" }), { description = "Move focus right" })
+hl.bind(globals.main_mod .. " + K", hl.dsp.focus({ direction = "u" }), { description = "Move focus up" })
+hl.bind(globals.main_mod .. " + J", hl.dsp.focus({ direction = "d" }), { description = "Move focus down" })
 
-hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true, description = "Move window with mouse" })
-hl.bind(mainMod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true, description = "Resize window with mouse" })
+hl.bind(
+	globals.main_mod .. " + mouse:272",
+	hl.dsp.window.drag(),
+	{ mouse = true, description = "Move window with mouse" }
+)
+hl.bind(
+	globals.main_mod .. " + mouse:273",
+	hl.dsp.window.resize(),
+	{ mouse = true, description = "Resize window with mouse" }
+)
 
-hl.bind(mainMod .. " + SHIFT + L", hl.dsp.window.resize({ x = 100, y = 0, relative = true }), { description = "Increase window width" })
-hl.bind(mainMod .. " + SHIFT + H", hl.dsp.window.resize({ x = -100, y = 0, relative = true }), { description = "Reduce window width" })
-hl.bind(mainMod .. " + SHIFT + J", hl.dsp.window.resize({ x = 0, y = 100, relative = true }), { description = "Increase window height" })
-hl.bind(mainMod .. " + SHIFT + K", hl.dsp.window.resize({ x = 0, y = -100, relative = true }), { description = "Reduce window height" })
+hl.bind(
+	globals.main_mod .. " + SHIFT + L",
+	hl.dsp.window.resize({ x = 100, y = 0, relative = true }),
+	{ description = "Increase window width" }
+)
+hl.bind(
+	globals.main_mod .. " + SHIFT + H",
+	hl.dsp.window.resize({ x = -100, y = 0, relative = true }),
+	{ description = "Reduce window width" }
+)
+hl.bind(
+	globals.main_mod .. " + SHIFT + J",
+	hl.dsp.window.resize({ x = 0, y = 100, relative = true }),
+	{ description = "Increase window height" }
+)
+hl.bind(
+	globals.main_mod .. " + SHIFT + K",
+	hl.dsp.window.resize({ x = 0, y = -100, relative = true }),
+	{ description = "Reduce window height" }
+)
 
-hl.bind(mainMod .. " + G", hl.dsp.group.toggle(), { description = "Toggle window group" })
+hl.bind(globals.main_mod .. " + G", hl.dsp.group.toggle(), { description = "Toggle window group" })
 
-hl.bind(mainMod .. " + ALT + H", hl.dsp.window.swap({ direction = "l" }), { description = "Swap window left" })
-hl.bind(mainMod .. " + ALT + L", hl.dsp.window.swap({ direction = "r" }), { description = "Swap window right" })
-hl.bind(mainMod .. " + ALT + K", hl.dsp.window.swap({ direction = "u" }), { description = "Swap window up" })
-hl.bind(mainMod .. " + ALT + J", hl.dsp.window.swap({ direction = "d" }), { description = "Swap window down" })
+hl.bind(globals.main_mod .. " + ALT + H", hl.dsp.window.swap({ direction = "l" }), { description = "Swap window left" })
+hl.bind(
+	globals.main_mod .. " + ALT + L",
+	hl.dsp.window.swap({ direction = "r" }),
+	{ description = "Swap window right" }
+)
+hl.bind(globals.main_mod .. " + ALT + K", hl.dsp.window.swap({ direction = "u" }), { description = "Swap window up" })
+hl.bind(globals.main_mod .. " + ALT + J", hl.dsp.window.swap({ direction = "d" }), { description = "Swap window down" })
 
 -- Old file had two ALT + Tab binde lines. Lua supports multiple binds, but this is cleaner.
 hl.bind("ALT + TAB", function()
@@ -91,34 +127,66 @@ end, { repeating = true, description = "Cycle windows and bring active to top" }
 -- Actions
 -- -----------------------------------------------------
 
-hl.bind(mainMod .. " + CTRL + R", sh("hyprctl reload"), { description = "Reload Hyprland" })
-hl.bind(mainMod .. " + SHIFT + A", sh(HYPRSCRIPTS .. "/toggle-animations.sh"), { description = "Toggle animations" })
-hl.bind(mainMod .. " + Print", sh(HYPRSCRIPTS .. "/screenshot.sh"), { description = "Take screenshot" })
-hl.bind(mainMod .. " + SHIFT + S", sh(HYPRSCRIPTS .. "/screenshot.sh"), { description = "Take screenshot" })
-hl.bind(mainMod .. " + CTRL + Q", sh(home .. "/.config/ml4w/scripts/wlogout.sh"), { description = "Open wlogout" })
+hl.bind(globals.main_mod .. " + CTRL + R", sh("hyprctl reload"), { description = "Reload Hyprland" })
+hl.bind(
+	globals.main_mod .. " + SHIFT + A",
+	sh(HYPRSCRIPTS .. "/toggle-animations.sh"),
+	{ description = "Toggle animations" }
+)
+hl.bind(globals.main_mod .. " + Print", sh(HYPRSCRIPTS .. "/screenshot.sh"), { description = "Take screenshot" })
+hl.bind(globals.main_mod .. " + SHIFT + S", sh(HYPRSCRIPTS .. "/screenshot.sh"), { description = "Take screenshot" })
+hl.bind(
+	globals.main_mod .. " + CTRL + Q",
+	sh(home .. "/.config/ml4w/scripts/wlogout.sh"),
+	{ description = "Open wlogout" }
+)
 
 -- -----------------------------------------------------
 -- Wallpaper
 -- -----------------------------------------------------
 
-hl.bind(mainMod .. " + W", sh("waypaper --backend awww"), { description = "Open Waypaper" })
-hl.bind(mainMod .. " + SHIFT + W", sh("waypaper --folder /home/gus/Pictures/wallpaper --backend awww --random"), { description = "Random wallpaper" })
+hl.bind(
+	globals.main_mod .. " + W",
+	sh("waypaper --folder " .. home .. "/Pictures/wallpaper --backend awww "),
+	{ description = "Open Waypaper" }
+)
+hl.bind(
+	globals.main_mod .. " + SHIFT + W",
+	sh("waypaper --folder " .. home .. "/Pictures/wallpaper --backend awww --random"),
+	{ description = "Random wallpaper" }
+)
 
 -- -----------------------------------------------------
 -- Launchers / tools
 -- -----------------------------------------------------
 
-hl.bind(mainMod .. " + SPACE", sh("pkill rofi || rofi -show drun -replace -i"), { description = "Open app launcher" })
-hl.bind(mainMod .. " + CTRL + K", sh(HYPRSCRIPTS .. "/keybindings.sh"), { description = "Show keybindings" })
-hl.bind(mainMod .. " + SHIFT + B", sh(home .. "/.config/waybar/launch.sh"), { description = "Reload Waybar" })
-hl.bind(mainMod .. " + CTRL + B", sh(home .. "/.config/waybar/toggle.sh"), { description = "Toggle Waybar" })
-hl.bind(mainMod .. " + SHIFT + R", sh(HYPRSCRIPTS .. "/loadconfig.sh"), { description = "Reload Hyprland config via script" })
-hl.bind(mainMod .. " + V", sh(SCRIPTS .. "/cliphist.sh"), { description = "Open clipboard manager" })
-hl.bind(mainMod .. " + CTRL + T", sh(home .. "/.config/waybar/themeswitcher.sh"), { description = "Open Waybar theme switcher" })
-hl.bind(mainMod .. " + CTRL + S", sh("flatpak run com.ml4w.settings"), { description = "Open ML4W settings" })
+hl.bind(
+	globals.main_mod .. " + SPACE",
+	sh("pkill rofi || rofi -show drun -replace -i"),
+	{ description = "Open app launcher" }
+)
+hl.bind(globals.main_mod .. " + CTRL + K", sh(HYPRSCRIPTS .. "/keybindings.sh"), { description = "Show keybindings" })
+hl.bind(globals.main_mod .. " + SHIFT + B", sh(home .. "/.config/waybar/launch.sh"), { description = "Reload Waybar" })
+hl.bind(globals.main_mod .. " + CTRL + B", sh(home .. "/.config/waybar/toggle.sh"), { description = "Toggle Waybar" })
+hl.bind(
+	globals.main_mod .. " + SHIFT + R",
+	sh(HYPRSCRIPTS .. "/loadconfig.sh"),
+	{ description = "Reload Hyprland config via script" }
+)
+hl.bind(globals.main_mod .. " + V", sh(SCRIPTS .. "/cliphist.sh"), { description = "Open clipboard manager" })
+hl.bind(
+	globals.main_mod .. " + CTRL + T",
+	sh(home .. "/.config/waybar/themeswitcher.sh"),
+	{ description = "Open Waybar theme switcher" }
+)
+hl.bind(globals.main_mod .. " + CTRL + S", sh("flatpak run com.ml4w.settings"), { description = "Open ML4W settings" })
 -- hl.bind(mainMod .. " + SHIFT + H", sh(HYPRSCRIPTS .. "/hyprshade.sh"), { description = "Toggle screenshader" })
 -- hl.bind(mainMod .. " + ALT + G", sh(HYPRSCRIPTS .. "/gamemode.sh"), { description = "Toggle game mode" })
-hl.bind(mainMod .. " + CTRL + L", sh(home .. "/.config/hypr/scripts/power.sh lock"), { description = "Lock screen" })
+hl.bind(
+	globals.main_mod .. " + CTRL + L",
+	sh(home .. "/.config/hypr/scripts/power.sh lock"),
+	{ description = "Lock screen" }
+)
 
 -- -----------------------------------------------------
 -- Workspaces
@@ -129,59 +197,87 @@ for i = 1, 10 do
 	local workspace = tostring(i)
 
 	hl.bind(
-		mainMod .. " + " .. key,
+		globals.main_mod .. " + " .. key,
 		hl.dsp.focus({ workspace = workspace }),
 		{ description = "Open workspace " .. workspace }
 	)
 
 	-- Your comment said "Move to workspace and follow", so follow=true is intentional here.
 	hl.bind(
-		mainMod .. " + SHIFT + " .. key,
+		globals.main_mod .. " + SHIFT + " .. key,
 		hl.dsp.window.move({ workspace = workspace, follow = true }),
 		{ description = "Move active window to workspace " .. workspace .. " and follow" }
 	)
 
 	hl.bind(
-		mainMod .. " + ALT + " .. key,
+		globals.main_mod .. " + ALT + " .. key,
 		hl.dsp.window.move({ workspace = workspace, follow = false }),
 		{ description = "Move active window to workspace " .. workspace .. " silently" }
 	)
 
 	hl.bind(
-		mainMod .. " + CTRL + " .. key,
+		globals.main_mod .. " + CTRL + " .. key,
 		sh(HYPRSCRIPTS .. "/moveTo.sh " .. workspace),
 		{ description = "Move all windows to workspace " .. workspace }
 	)
 end
 
-hl.bind(mainMod .. " + TAB", hl.dsp.focus({ workspace = "m+1" }), { description = "Open next workspace on monitor" })
-hl.bind(mainMod .. " + SHIFT + TAB", hl.dsp.focus({ workspace = "m-1" }), { description = "Open previous workspace on monitor" })
+hl.bind(
+	globals.main_mod .. " + TAB",
+	hl.dsp.focus({ workspace = "m+1" }),
+	{ description = "Open next workspace on monitor" }
+)
+hl.bind(
+	globals.main_mod .. " + SHIFT + TAB",
+	hl.dsp.focus({ workspace = "m-1" }),
+	{ description = "Open previous workspace on monitor" }
+)
 
-hl.bind(mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }), { description = "Open next existing workspace" })
-hl.bind(mainMod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }), { description = "Open previous existing workspace" })
-hl.bind(mainMod .. " + CTRL + down", hl.dsp.focus({ workspace = "empty" }), { description = "Open next empty workspace" })
+hl.bind(
+	globals.main_mod .. " + mouse_down",
+	hl.dsp.focus({ workspace = "e+1" }),
+	{ description = "Open next existing workspace" }
+)
+hl.bind(
+	globals.main_mod .. " + mouse_up",
+	hl.dsp.focus({ workspace = "e-1" }),
+	{ description = "Open previous existing workspace" }
+)
+hl.bind(
+	globals.main_mod .. " + CTRL + down",
+	hl.dsp.focus({ workspace = "empty" }),
+	{ description = "Open next empty workspace" }
+)
 
 -- -----------------------------------------------------
 -- Fn / media keys
 -- -----------------------------------------------------
 
-hl.bind("XF86AudioRaiseVolume", sh("pactl set-sink-mute @DEFAULT_SINK@ 0 && pactl set-sink-volume @DEFAULT_SINK@ +5%"), { locked = true, repeating = true, description = "Increase volume" })
-hl.bind("XF86AudioLowerVolume", sh("pactl set-sink-mute @DEFAULT_SINK@ 0 && pactl set-sink-volume @DEFAULT_SINK@ -5%"), { locked = true, repeating = true, description = "Decrease volume" })
-hl.bind("XF86AudioMute", sh("pactl set-sink-mute @DEFAULT_SINK@ toggle"), { locked = true, description = "Toggle mute" })
+hl.bind(
+	"XF86AudioRaiseVolume",
+	sh("pactl set-sink-mute @DEFAULT_SINK@ 0 && pactl set-sink-volume @DEFAULT_SINK@ +5%"),
+	{ locked = true, repeating = true, description = "Increase volume" }
+)
+hl.bind(
+	"XF86AudioLowerVolume",
+	sh("pactl set-sink-mute @DEFAULT_SINK@ 0 && pactl set-sink-volume @DEFAULT_SINK@ -5%"),
+	{ locked = true, repeating = true, description = "Decrease volume" }
+)
+hl.bind(
+	"XF86AudioMute",
+	sh("pactl set-sink-mute @DEFAULT_SINK@ toggle"),
+	{ locked = true, description = "Toggle mute" }
+)
 hl.bind("XF86AudioPlay", sh("playerctl play-pause"), { locked = true, description = "Play/pause audio" })
 hl.bind("XF86AudioPause", sh("playerctl pause"), { locked = true, description = "Pause audio" })
 hl.bind("XF86AudioNext", sh("playerctl next"), { locked = true, description = "Next track" })
 hl.bind("XF86AudioPrev", sh("playerctl previous"), { locked = true, description = "Previous track" })
-hl.bind("XF86AudioMicMute", sh("pactl set-source-mute @DEFAULT_SOURCE@ toggle"), { locked = true, description = "Toggle microphone" })
+hl.bind(
+	"XF86AudioMicMute",
+	sh("pactl set-source-mute @DEFAULT_SOURCE@ toggle"),
+	{ locked = true, description = "Toggle microphone" }
+)
 hl.bind("XF86Calculator", sh(home .. "/.config/ml4w/settings/calculator.sh"), { description = "Open calculator" })
--- Removed broken key: XF86Lock is not a valid keysym on this setup.
--- You already have SUPER + CTRL + L for locking.
--- If your keyboard has a real lock key, run `wev`, press the key, and use the keysym it reports.
--- Common alternative on some keyboards:
--- hl.bind("XF86ScreenSaver", sh("hyprlock"), { locked = true, description = "Lock screen" })
--- Or bind by keycode after checking wev, for example:
--- hl.bind("code:160", sh("hyprlock"), { locked = true, description = "Lock screen" })
-
 -- -----------------------------------------------------
 -- Brightness
 -- -----------------------------------------------------
