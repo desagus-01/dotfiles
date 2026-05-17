@@ -55,7 +55,7 @@ hl.on("workspace.active", function(ws)
 	end
 end)
 
-hl.bind(globals.main_mod .. " + SHIFT + T", function()
+hl.bind(globals.main_mod .. " + CTRL + T", function()
 	local ws = hl.get_active_workspace()
 
 	if not ws then

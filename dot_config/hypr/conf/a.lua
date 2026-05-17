@@ -175,11 +175,6 @@ hl.bind(
 )
 hl.bind(globals.main_mod .. " + V", sh(SCRIPTS .. "/cliphist.sh"), { description = "Open clipboard manager" })
 hl.bind(
-	globals.main_mod .. " + CTRL + T",
-	sh(home .. "/.config/waybar/themeswitcher.sh"),
-	{ description = "Open Waybar theme switcher" }
-)
-hl.bind(
 	globals.main_mod .. " + CTRL + L",
 	sh(home .. "/.config/hypr/scripts/power.sh lock"),
 	{ description = "Lock screen" }
