@@ -1,4 +1,3 @@
--- config
 hl.config({
 	dwindle = { preserve_split = true },
 	scrolling = { column_width = 1 },
@@ -49,11 +48,24 @@ local function update_border_colors(layout)
 	})
 end
 
+local function update_active_workspace_border_colors()
+	local ws = hl.get_active_workspace()
+
+	if ws and ws.tiled_layout then
+		update_border_colors(ws.tiled_layout)
+	end
+end
+
 hl.on("workspace.active", function(ws)
-	if ws then
+	if ws and ws.tiled_layout then
 		update_border_colors(ws.tiled_layout)
 	end
 end)
+
+hl.on("hyprland.start", update_active_workspace_border_colors)
+hl.on("config.reloaded", update_active_workspace_border_colors)
+
+update_active_workspace_border_colors()
 
 hl.bind(globals.main_mod .. " + CTRL + T", function()
 	local ws = hl.get_active_workspace()
@@ -77,7 +89,7 @@ hl.bind(globals.main_mod .. " + CTRL + T", function()
 
 		text = " 󱂬 Workspace layout set to " .. new_layout,
 
-		duration = 3000,
+		timeout = 3000,
 
 		icon = 5,
 	})
