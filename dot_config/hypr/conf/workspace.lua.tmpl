@@ -2,7 +2,10 @@
 --
 --
 {{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" -}}
--- helper func
+-- Workspaces to monitors
+
+local hypr_globals = require("hypr_globals")
+local utils = require("utils")
 
 local function assign_workspaces(first_workspace, last_workspace, monitor, layout)
 	for i = first_workspace, last_workspace do
@@ -12,16 +15,23 @@ local function assign_workspaces(first_workspace, last_workspace, monitor, layou
 			persistent = true,
 			layout = layout,
 		}
+
 		if layout == "scrolling" then
 			rule.layout_opts = { direction = "down" }
 		end
+
 		hl.workspace_rule(rule)
+
+		-- Important: seed Waybar's per-workspace layout state on startup.
+		utils.write_layout_state(i, layout)
 	end
 end
 
-local hypr_globals = require("hypr_globals")
 assign_workspaces(1, 4, hypr_globals.vertical_monitor_name, "scrolling")
 assign_workspaces(5, 8, hypr_globals.horizontal_monitor_name, "dwindle")
+utils.signal_waybar_layout_module()
+
+
 {{- else }}
 --No need for laptop
 {{- end -}}

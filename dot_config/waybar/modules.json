@@ -6,13 +6,13 @@
 //
 //
 {
-	// update
-	"custom/custom_updates": {
-	  "exec": "~/.config/scripts/weekly_update.sh status --waybar",
-	  "return-type": "json",
-	  "interval": 3600,
-	  "on-click": "~/.config/scripts/weekly_update.sh status run"
-	},
+// update
+"custom/custom_updates": {
+  "exec": "~/.config/scripts/weekly_update.sh status --waybar",
+  "return-type": "json",
+  "interval": 3600,
+  "on-click": "~/.config/scripts/weekly_update.sh status run"
+},
 
 
 
@@ -466,6 +466,17 @@
         "on-click-right": "echo 'max' > /tmp/waybar-ddc-module-rx",
         "tooltip": false,
     },
+
+	// workspace
+	"custom/workspace_layout": {
+	  "exec": "~/.config/waybar/workspace_layout.sh",
+	  "return-type": "json",
+	  "interval": "once",
+	  "signal": 8,
+	  "format": "{}",
+	  "tooltip": true
+	},
+
 
 },
 

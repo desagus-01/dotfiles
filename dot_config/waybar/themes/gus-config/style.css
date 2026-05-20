@@ -36,7 +36,37 @@ window#waybar {
     border:1px solid @workspacesborder;
 }
 
+#custom-workspace_layout {
+    background: @workspacesbackground1;
+    color: @textcolor2;
+    border: 2px solid @workspacesborder;
+    border-radius: 5px;
+    padding: 0px 8px;
+    margin: 2px 6px 3px 1px;
+    font-size: 16px;
+    font-weight: bold;
+    opacity: 1.0;
+    min-width: 20px;
+}
 
+#custom-workspace_layout.dwindle {
+    background: @accent_bg;
+    color: @textcolor3;
+    border-color: @workspacesborder;
+}
+
+#custom-workspace_layout.scrolling {
+    background: @accent_bg;
+    color: @textcolor3;
+    border-color: @workspacesborder;
+}
+
+#custom-workspace_layout.unknown {
+    background: @workspacesbackground1;
+    color: @textcolor2;
+    border-color: @workspacesborder;
+    opacity: 0.5;
+}
 
 #workspaces {
     background: @workspacesbackground1;

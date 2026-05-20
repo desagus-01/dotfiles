@@ -8,8 +8,21 @@ hl.config({
 	general = { gaps_in = 5, gaps_out = 7, border_size = 4, resize_on_border = true },
 })
 
--- keybinding rule
 local globals = require("hypr_globals")
+local utils = require("utils")
+
+local function is_valid_layout(layout)
+	return layout == "dwindle" or layout == "scrolling"
+end
+
+local function update_waybar_layout_indicator(workspace_id, layout)
+	if not workspace_id or not is_valid_layout(layout) then
+		return
+	end
+
+	utils.write_layout_state(workspace_id, layout)
+	utils.signal_waybar_layout_module()
+end
 
 local function require_color(value, name)
 	if type(value) ~= "string" or value == "" then
@@ -20,6 +33,10 @@ local function require_color(value, name)
 end
 
 local function update_border_colors(layout)
+	if not is_valid_layout(layout) then
+		return
+	end
+
 	local active_colors
 
 	if layout == "scrolling" then
@@ -41,56 +58,56 @@ local function update_border_colors(layout)
 					colors = active_colors,
 					angle = 45,
 				},
-
 				inactive_border = require_color(globals.border_inactive, "border_inactive"),
 			},
 		},
 	})
 end
 
-local function update_active_workspace_border_colors()
-	local ws = hl.get_active_workspace()
-
-	if ws and ws.tiled_layout then
-		update_border_colors(ws.tiled_layout)
+local function update_workspace_visuals(ws)
+	if not ws or not ws.id or not ws.tiled_layout then
+		return
 	end
+
+	local layout = ws.tiled_layout
+
+	if not is_valid_layout(layout) then
+		return
+	end
+
+	update_border_colors(layout)
+	update_waybar_layout_indicator(ws.id, layout)
+end
+
+local function update_active_workspace_visuals()
+	local ws = hl.get_active_workspace()
+	update_workspace_visuals(ws)
 end
 
 hl.on("workspace.active", function(ws)
-	if ws and ws.tiled_layout then
-		update_border_colors(ws.tiled_layout)
-	end
+	update_workspace_visuals(ws)
 end)
 
-hl.on("hyprland.start", update_active_workspace_border_colors)
-hl.on("config.reloaded", update_active_workspace_border_colors)
+hl.on("hyprland.start", update_active_workspace_visuals)
+hl.on("config.reloaded", update_active_workspace_visuals)
 
-update_active_workspace_border_colors()
+update_active_workspace_visuals()
 
 hl.bind(globals.main_mod .. " + CTRL + T", function()
 	local ws = hl.get_active_workspace()
 
-	if not ws then
+	if not ws or not ws.id then
 		return
 	end
 
-	local new_layout = ws.tiled_layout == "dwindle" and "scrolling" or "dwindle"
+	local current_layout = ws.tiled_layout or "dwindle"
+	local new_layout = current_layout == "dwindle" and "scrolling" or "dwindle"
 
 	hl.workspace_rule({
-
 		workspace = tostring(ws.id),
-
 		layout = new_layout,
 	})
 
 	update_border_colors(new_layout)
-
-	hl.notification.create({
-
-		text = " 󱂬 Workspace layout set to " .. new_layout,
-
-		timeout = 3000,
-
-		icon = 5,
-	})
+	update_waybar_layout_indicator(ws.id, new_layout)
 end)
