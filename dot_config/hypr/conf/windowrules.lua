@@ -1,15 +1,3 @@
--- Fix XWayland dragging / focus bugs
--- hl.window_rule({
--- 	name = "fix-xwayland-no-focus",
--- 	match = { xwayland = true },
--- 	no_focus = true,
--- })
--- hl.window_rule({
--- 	name = "fix-xwayland-float",
--- 	match = { xwayland = true },
--- 	float = true,
--- })
---
 -- hyprland-run window
 hl.window_rule({
 	name = "move-hyprland-run",
@@ -54,12 +42,6 @@ hl.window_rule({
 	match = { class = "^(swaync)$" },
 	border_size = 0,
 })
-
--- Waybar
-hl.layer_rule({ name = "waybar-blur", match = { namespace = "waybar" }, blur = true })
-hl.layer_rule({ name = "waybar-alpha", match = { namespace = "waybar" }, ignore_alpha = 0.5 })
-hl.layer_rule({ name = "waybar-no-anim", match = { namespace = "waybar" }, no_anim = true })
-
 -- SwayNC
 hl.layer_rule({ name = "swaync-cc-blur", match = { namespace = "swaync-control-center" }, blur = true })
 hl.layer_rule({ name = "swaync-notif-blur", match = { namespace = "swaync-notification-window" }, blur = true })
