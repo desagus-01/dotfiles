@@ -44,6 +44,7 @@ pacman_packages_core:
   - bitwarden-cli
   - awww
   - tree
+  - helium-browser-bin
 pacman_packages_hypr:
   - hyprpicker
   - xdg-desktop-portal-hyprland
