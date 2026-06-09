@@ -45,6 +45,7 @@ pacman_packages_core:
   - awww
   - tree
   - helium-browser-bin
+  - opencode
 pacman_packages_hypr:
   - hyprpicker
   - xdg-desktop-portal-hyprland
