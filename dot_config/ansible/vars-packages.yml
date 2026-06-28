@@ -46,6 +46,7 @@ pacman_packages_core:
   - tree
   - helium-browser-bin
   - opencode
+  - shelly
 pacman_packages_hypr:
   - hyprpicker
   - xdg-desktop-portal-hyprland
