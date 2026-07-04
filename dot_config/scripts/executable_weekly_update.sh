@@ -32,12 +32,12 @@ Usage:
   weekly-update status [--waybar]
 
 Commands:
-  run        Runs: mirrors -> keyrings -> paru upgrade -> clean cache -> stamp time
+  run        Runs: mirrors -> keyrings -> shelly upgrade -> clean cache -> stamp time
   status     Shows days since last successful run (and optionally Waybar JSON)
 
 Options:
   --force       Run even if < 7 days since last success
-  --noconfirm   Non-interactive (passes --noconfirm to pacman/paru where sensible)
+  --noconfirm   Non-interactive (passes --noconfirm to pacman and --no-confirm to shelly)
   --waybar      Output JSON for Waybar custom module
 EOF
 }
@@ -71,7 +71,7 @@ case "$cmd" in
   run)
     need_cmd sudo
     need_cmd pacman
-    need_cmd paru
+    need_cmd shelly
     need_cmd cachyos-rate-mirrors
     need_cmd flock
 
@@ -90,10 +90,10 @@ case "$cmd" in
     fi
 
     PACMAN_FLAGS=()
-    PARU_FLAGS=(--news)
+    SHELLY_FLAGS=()
     if [[ "$NOCONFIRM" -eq 1 ]]; then
       PACMAN_FLAGS+=(--noconfirm)
-      PARU_FLAGS+=(--noconfirm)
+      SHELLY_FLAGS+=(--no-confirm)
     fi
 
     echo "==> [1/4] Updating CachyOS mirror ranking…"
@@ -103,16 +103,12 @@ case "$cmd" in
     # Keyrings first helps avoid signature/PGP drama
     sudo pacman -Sy --needed "${PACMAN_FLAGS[@]}" archlinux-keyring cachyos-keyring
 
-    echo "==> [3/4] Full system upgrade via paru…"
-    # -Syu covers repo + AUR upgrades through paru
-    paru -Syu "${PARU_FLAGS[@]}"
+    echo "==> [3/4] Full system upgrade via shelly…"
+    shelly news "${SHELLY_FLAGS[@]}"
+    shelly upgrade "${SHELLY_FLAGS[@]}"
 
     echo "==> [4/4] Cleaning caches…"
-    # Aggressive cache cleanup:
-    # -Scc: remove ALL cached packages (like pacman -Scc)
-    # -Sc : paru also cleans cached AUR packages + untracked cache files
-    # paru -Scc "${PARU_FLAGS[@]}" || true
-    paru -Sc  "${PARU_FLAGS[@]}" || true
+    shelly cache-clean "${SHELLY_FLAGS[@]}" || true
 
     echo "==> Writing success stamp…"
     now_epoch > "$STAMP_FILE"
@@ -141,4 +137,3 @@ case "$cmd" in
     exit 2
     ;;
 esac
-

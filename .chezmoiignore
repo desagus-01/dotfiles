@@ -28,3 +28,5 @@
 .config/.oh-my-zsh/CONTRIBUTING.md
 .config/.oh-my-zsh/LICENSE.txt
 .config/.oh-my-zsh/README.md
+
+.config/.oh-my-zsh/themes/**
