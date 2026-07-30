@@ -435,11 +435,11 @@
     "scroll-step": 1
   },
   // weather
-  "custom/weather": {
-    "format": "{}°",
+"custom/weather": {
+    "format": "{}",
     "tooltip": true,
-    "interval": 3600,
-    "exec": "wttrbar --location London",
+    "interval": 900,
+    "exec": "wttrbar --location 'Walnut Creek, California' --fahrenheit",
     "return-type": "json"
 },
 // update check

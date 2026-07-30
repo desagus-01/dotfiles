@@ -105,7 +105,7 @@ case "$cmd" in
 
     echo "==> [3/4] Full system upgrade via shelly…"
     shelly news "${SHELLY_FLAGS[@]}"
-    shelly upgrade "${SHELLY_FLAGS[@]}"
+    shelly "${SHELLY_FLAGS[@]}"
 
     echo "==> [4/4] Cleaning caches…"
     shelly cache-clean "${SHELLY_FLAGS[@]}" || true
