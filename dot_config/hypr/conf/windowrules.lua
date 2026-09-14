@@ -13,6 +13,14 @@ hl.window_rule({
 	no_blur = true,
 })
 
+-- Bitwarden browser extension popup
+hl.window_rule({
+	name = "float-bitwarden-browser-popup",
+	match = { title = "^Extension: %(Bitwarden Password Manager%) %- Bitwarden .*" },
+	float = true,
+	center = true,
+})
+
 -- File pickers floating & centered
 hl.window_rule({
 	name = "float-file-pickers",
