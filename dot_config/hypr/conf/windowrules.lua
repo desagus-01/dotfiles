@@ -16,7 +16,7 @@ hl.window_rule({
 -- Bitwarden browser extension popup
 hl.window_rule({
 	name = "float-bitwarden-browser-popup",
-	match = { title = "^Extension: %(Bitwarden Password Manager%) %- Bitwarden .*" },
+	match = { title = "^Extension: [(]Bitwarden Password Manager[)] - Bitwarden .*" },
 	float = true,
 	center = true,
 })
