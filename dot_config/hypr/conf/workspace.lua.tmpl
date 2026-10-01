@@ -1,10 +1,13 @@
 -- Workspaces to monitors
---
---
-{{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" -}}
--- Workspaces to monitors
-
+{{ if eq .chezmoi.hostname "gus-pc-cachyos-x8664" }}
 local hypr_globals = require("hypr_globals")
+local first_monitor = hypr_globals.vertical_monitor_name
+local second_monitor = hypr_globals.horizontal_monitor_name
+{{ else if eq .chezmoi.hostname "laptop-cachyos-x8664" }}
+local first_monitor = "eDP-1"
+local second_monitor = "DP-4"
+{{ end }}
+
 local utils = require("utils")
 
 local function assign_workspaces(first_workspace, last_workspace, monitor, layout)
@@ -27,14 +30,10 @@ local function assign_workspaces(first_workspace, last_workspace, monitor, layou
 	end
 end
 
-assign_workspaces(1, 4, hypr_globals.vertical_monitor_name, "scrolling")
-assign_workspaces(5, 8, hypr_globals.horizontal_monitor_name, "dwindle")
+{{ if or (eq .chezmoi.hostname "gus-pc-cachyos-x8664") (eq .chezmoi.hostname "laptop-cachyos-x8664") }}
+assign_workspaces(1, 4, first_monitor, "scrolling")
+assign_workspaces(5, 8, second_monitor, "dwindle")
 utils.signal_waybar_layout_module()
-
-
-{{- else }}
---No need for laptop
-{{- end -}}
-
+{{ end }}
 
 

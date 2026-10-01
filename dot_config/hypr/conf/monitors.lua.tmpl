@@ -17,6 +17,23 @@ hl.monitor({
 })
 
 
+{{- else if eq .chezmoi.hostname "laptop-cachyos-x8664" -}}
+-- Laptop with the external monitor connected below the built-in display.
+hl.monitor({
+	output = "eDP-1",
+	mode = "preferred",
+	position = "auto-center-up",
+	scale = "auto",
+})
+
+hl.monitor({
+	output = "DP-4",
+	mode = "preferred",
+	position = "auto-center-down",
+	scale = "auto",
+})
+
+
 {{- else -}}
 
 hl.monitor({

@@ -11,14 +11,19 @@
     "on-scroll-down": "hyprctl dispatch workspace e-1",
 
     "persistent-workspaces": {
-     {{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" -}}
+     {{- if or (eq .chezmoi.hostname "gus-pc-cachyos-x8664") (eq .chezmoi.hostname "laptop-cachyos-x8664") -}}
+      {{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" -}}
       "HDMI-A-1": [1, 2, 3, 4],
       "DP-2": [5, 6, 7, 8]
+      {{- else -}}
+      "eDP-1": [1, 2, 3, 4],
+      "DP-4": [5, 6, 7, 8]
+      {{- end -}}
       {{- else -}}
       "*": 5
       {{- end }}
      },
-     {{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" -}}
+     {{- if or (eq .chezmoi.hostname "gus-pc-cachyos-x8664") (eq .chezmoi.hostname "laptop-cachyos-x8664") -}}
       "format": "{name}: {windows}",
       {{- else -}}
       "format": "{windows}",
