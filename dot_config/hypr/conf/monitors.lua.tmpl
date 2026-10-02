@@ -18,12 +18,15 @@ hl.monitor({
 
 
 {{- else if eq .chezmoi.hostname "laptop-cachyos-x8664" -}}
--- Laptop with the external monitor connected below the built-in display.
+-- The internal panel is self-contained when the laptop is undocked.  The
+-- DP-4 rule is only applied by Hyprland while that output exists; when it is
+-- connected, place it below eDP-1.
 hl.monitor({
 	output = "eDP-1",
 	mode = "preferred",
-	position = "auto-center-up",
-	scale = "auto",
+	position = "auto",
+	-- Keep the laptop UI at its previous, less magnified scale.
+	scale = 1.33,
 })
 
 hl.monitor({

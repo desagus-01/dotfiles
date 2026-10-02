@@ -6,6 +6,20 @@ local second_monitor = hypr_globals.horizontal_monitor_name
 {{ else if eq .chezmoi.hostname "laptop-cachyos-x8664" }}
 local first_monitor = "eDP-1"
 local second_monitor = "DP-4"
+
+local function output_connected(output)
+	local monitors = io.popen("hyprctl monitors -j 2>/dev/null")
+
+	if not monitors then
+		return false
+	end
+
+	local monitor_json = monitors:read("*a")
+	monitors:close()
+	return monitor_json:find('"name"%s*:%s*"' .. output .. '"') ~= nil
+end
+
+local docked = output_connected(second_monitor)
 {{ end }}
 
 local utils = require("utils")
@@ -30,10 +44,30 @@ local function assign_workspaces(first_workspace, last_workspace, monitor, layou
 	end
 end
 
-{{ if or (eq .chezmoi.hostname "gus-pc-cachyos-x8664") (eq .chezmoi.hostname "laptop-cachyos-x8664") }}
+{{ if eq .chezmoi.hostname "gus-pc-cachyos-x8664" }}
 assign_workspaces(1, 4, first_monitor, "scrolling")
 assign_workspaces(5, 8, second_monitor, "dwindle")
 utils.signal_waybar_layout_module()
+{{ else if eq .chezmoi.hostname "laptop-cachyos-x8664" }}
+if docked then
+	-- Docked: restore the eight-workspace, four-per-monitor arrangement.
+	assign_workspaces(1, 4, first_monitor, "scrolling")
+	assign_workspaces(5, 8, second_monitor, "dwindle")
+else
+	-- Laptop only: retain the normal six-workspace setup on the internal panel.
+	assign_workspaces(1, 6, first_monitor, "dwindle")
+end
+utils.signal_waybar_layout_module()
+
+local function refresh_monitor_setup()
+	-- Give Hyprland time to finish updating its monitor list, then rebuild the
+	-- six-workspace laptop or eight-workspace docked configuration and restart
+	-- Waybar with the matching output set.
+	hl.exec_cmd("sh -c 'sleep 1; hyprctl reload; sleep 1; ~/.config/hypr/scripts/monitor_setup.sh' &")
+end
+
+hl.on("monitor.added", refresh_monitor_setup)
+hl.on("monitor.removed", refresh_monitor_setup)
 {{ end }}
 
 

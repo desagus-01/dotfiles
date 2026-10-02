@@ -10,24 +10,20 @@
     "on-scroll-up": "hyprctl dispatch workspace e+1",
     "on-scroll-down": "hyprctl dispatch workspace e-1",
 
+{{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" }}
     "persistent-workspaces": {
-     {{- if or (eq .chezmoi.hostname "gus-pc-cachyos-x8664") (eq .chezmoi.hostname "laptop-cachyos-x8664") -}}
-      {{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" -}}
       "HDMI-A-1": [1, 2, 3, 4],
       "DP-2": [5, 6, 7, 8]
-      {{- else -}}
-      "eDP-1": [1, 2, 3, 4],
-      "DP-4": [5, 6, 7, 8]
-      {{- end -}}
-      {{- else -}}
-      "*": 5
-      {{- end }}
-     },
-     {{- if or (eq .chezmoi.hostname "gus-pc-cachyos-x8664") (eq .chezmoi.hostname "laptop-cachyos-x8664") -}}
-      "format": "{name}: {windows}",
-      {{- else -}}
-      "format": "{windows}",
-      {{- end }}
+    },
+    "format": "{name}: {windows}",
+{{- else if eq .chezmoi.hostname "laptop-cachyos-x8664" }}
+    // The laptop bar shows workspace window icons without a numeric prefix.
+    // Its actual six- or eight-workspace set is supplied by Hyprland.
+    "format": "{windows}",
+{{- else }}
+    "persistent-workspaces": { "*": 5 },
+    "format": "{windows}",
+{{- end }}
 
     "format-window-separator": " ",
     "window-rewrite-default": "",
