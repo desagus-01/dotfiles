@@ -6,6 +6,17 @@ hl.window_rule({
 	move = "20% 80%",
 })
 
+-- Floating termdown stopwatch/timer overlay
+hl.window_rule({
+	name = "float-termdown-stopwatch",
+	match = { class = "^com[.]gus[.]termdown_stopwatch$" },
+	float = true,
+	pin = true,
+	no_initial_focus = true,
+	size = "360 200",
+	move = "monitor_w-376 57",
+})
+
 -- Remove right-click menu blur in Chromium browsers
 hl.window_rule({
 	name = "no-blur-chromium",

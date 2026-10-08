@@ -17,8 +17,8 @@
     },
     "format": "{name}: {windows}",
 {{- else if eq .chezmoi.hostname "laptop-cachyos-x8664" }}
-    // The laptop bar shows workspace window icons without a numeric prefix.
-    // Its actual six- or eight-workspace set is supplied by Hyprland.
+    // Laptop-only default: hide workspace numbers. monitor_setup.sh writes a
+    // runtime copy with numbers enabled when the external monitor is connected.
     "format": "{windows}",
 {{- else }}
     "persistent-workspaces": { "*": 5 },
@@ -75,6 +75,7 @@
       "class<Dbeaver>": "",
       "class<org.gnome.Nautilus>": "󰉋",
       "class<blueman-manager>": "󰂯",
+      "title<.*π.*>": "󰏿"
    }
   }
 }

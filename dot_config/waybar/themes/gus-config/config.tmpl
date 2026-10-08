@@ -11,7 +11,11 @@
     "include": [
         "~/.config/ml4w/settings/waybar-quicklinks.json",
         "~/.config/waybar/modules.json",
+{{- if eq .chezmoi.hostname "laptop-cachyos-x8664" }}
+        "~/.cache/waybar/custom_workspaces.json"
+{{- else }}
         "~/.config/waybar/custom_workspaces.json"
+{{- end }}
     ],
 
     // Modules Left

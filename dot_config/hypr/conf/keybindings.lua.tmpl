@@ -29,6 +29,16 @@ hl.bind(
 	sh(home .. "/.config/ml4w/settings/calculator.sh"),
 	{ description = "Open calculator" }
 )
+hl.bind(
+	globals.main_mod .. " + D",
+	sh(HYPRSCRIPTS .. "/stopwatch.sh"),
+	{ description = "Open termdown stopwatch/timer" }
+)
+hl.bind(
+	globals.main_mod .. " + SHIFT + D",
+	sh(HYPRSCRIPTS .. "/stopwatch.sh corner"),
+	{ description = "Choose termdown stopwatch/timer corner" }
+)
 
 -- -----------------------------------------------------
 -- Windows

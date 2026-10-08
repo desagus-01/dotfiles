@@ -4,22 +4,32 @@ local hypr_globals = require("hypr_globals")
 local first_monitor = hypr_globals.vertical_monitor_name
 local second_monitor = hypr_globals.horizontal_monitor_name
 {{ else if eq .chezmoi.hostname "laptop-cachyos-x8664" }}
-local first_monitor = "eDP-1"
-local second_monitor = "DP-4"
+local internal_monitor = "eDP-1"
+local external_monitor = "DP-4"
 
 local function output_connected(output)
-	local monitors = io.popen("hyprctl monitors -j 2>/dev/null")
+	-- Do not call `hyprctl` while Hyprland is parsing/reloading its config: doing
+	-- so can deadlock the IPC path and produce "Hyprland IPC didn't respond in
+	-- time".  The kernel connector state is enough for this hot-plug decision.
+	local statuses = io.popen("for status in /sys/class/drm/*-" .. output .. "/status; do [ -e \"$status\" ] && cat \"$status\"; done 2>/dev/null")
 
-	if not monitors then
+	if not statuses then
 		return false
 	end
 
-	local monitor_json = monitors:read("*a")
-	monitors:close()
-	return monitor_json:find('"name"%s*:%s*"' .. output .. '"') ~= nil
+	local status_output = statuses:read("*a")
+	statuses:close()
+
+	for line in status_output:gmatch("[^\r\n]+") do
+		if line == "connected" then
+			return true
+		end
+	end
+
+	return false
 end
 
-local docked = output_connected(second_monitor)
+local docked = output_connected(external_monitor)
 {{ end }}
 
 local utils = require("utils")
@@ -50,12 +60,13 @@ assign_workspaces(5, 8, second_monitor, "dwindle")
 utils.signal_waybar_layout_module()
 {{ else if eq .chezmoi.hostname "laptop-cachyos-x8664" }}
 if docked then
-	-- Docked: restore the eight-workspace, four-per-monitor arrangement.
-	assign_workspaces(1, 4, first_monitor, "scrolling")
-	assign_workspaces(5, 8, second_monitor, "dwindle")
+	-- Docked: match the PC's left-to-right numbering: external-left gets 1-4,
+	-- laptop-right gets 5-8.
+	assign_workspaces(1, 4, external_monitor, "scrolling")
+	assign_workspaces(5, 8, internal_monitor, "dwindle")
 else
 	-- Laptop only: retain the normal six-workspace setup on the internal panel.
-	assign_workspaces(1, 6, first_monitor, "dwindle")
+	assign_workspaces(1, 6, internal_monitor, "dwindle")
 end
 utils.signal_waybar_layout_module()
 
@@ -63,6 +74,8 @@ local function refresh_monitor_setup()
 	-- Give Hyprland time to finish updating its monitor list, then rebuild the
 	-- six-workspace laptop or eight-workspace docked configuration and restart
 	-- Waybar with the matching output set.
+	-- `hyprctl reload` is intentionally first so hot-plugged monitors immediately
+	-- pick up the left/right placement and workspace numbering.
 	hl.exec_cmd("sh -c 'sleep 1; hyprctl reload; sleep 1; ~/.config/hypr/scripts/monitor_setup.sh' &")
 end
 

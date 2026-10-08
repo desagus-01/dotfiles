@@ -5,7 +5,5 @@ hl.on("hyprland.start", function()
 	hl.exec_cmd("hypridle")
 	hl.exec_cmd("hyprsunset")
 	hl.exec_cmd("dbus-update-activation-environment --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
-	hl.exec_cmd(
-		'waybar -c "$HOME/.config/waybar/themes/gus-config/config" -s "$HOME/.config/waybar/themes/gus-config/colored/style.css" &'
-	)
+	hl.exec_cmd("~/.config/hypr/scripts/monitor_setup.sh &")
 end)
