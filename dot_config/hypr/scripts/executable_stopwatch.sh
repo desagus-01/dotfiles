@@ -4,8 +4,11 @@ set -euo pipefail
 
 WINDOW_CLASS="com.gus.termdown_stopwatch"
 DEFAULT_CORNER="top-right"
-WINDOW_WIDTH="${TERMDOWN_STOPWATCH_WIDTH:-360}"
-WINDOW_HEIGHT="${TERMDOWN_STOPWATCH_HEIGHT:-200}"
+WINDOW_COLUMNS="${TERMDOWN_STOPWATCH_COLUMNS:-30}"
+WINDOW_ROWS="${TERMDOWN_STOPWATCH_ROWS:-7}"
+WINDOW_WIDTH="${TERMDOWN_STOPWATCH_WIDTH:-300}"
+WINDOW_HEIGHT="${TERMDOWN_STOPWATCH_HEIGHT:-140}"
+WINDOW_FONT_SIZE="${TERMDOWN_STOPWATCH_FONT_SIZE:-15}"
 WINDOW_MARGIN="${TERMDOWN_STOPWATCH_MARGIN:-16}"
 
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/hypr"
@@ -24,6 +27,13 @@ Commands:
   corner, position  Choose the corner and move the existing timer if open
   move              Re-apply the saved corner to the existing timer
   close             Close the existing timer window
+
+Environment:
+  TERMDOWN_STOPWATCH_COLUMNS    Ghostty terminal columns, default: $WINDOW_COLUMNS
+  TERMDOWN_STOPWATCH_ROWS       Ghostty terminal rows, default: $WINDOW_ROWS
+  TERMDOWN_STOPWATCH_WIDTH      Output window width, default: $WINDOW_WIDTH
+  TERMDOWN_STOPWATCH_HEIGHT     Output window height, default: $WINDOW_HEIGHT
+  TERMDOWN_STOPWATCH_FONT_SIZE  Ghostty font size, default: $WINDOW_FONT_SIZE
 EOF
 }
 
@@ -343,7 +353,7 @@ launch_timer() {
 	if [[ "$terminal" == *ghostty* ]]; then
 		# Intentionally allow the terminal setting to contain arguments.
 		# shellcheck disable=SC2086
-		$terminal --gtk-single-instance=false --class="$WINDOW_CLASS" -e termdown "${termdown_args[@]}" >/dev/null 2>&1 &
+		$terminal --gtk-single-instance=false --class="$WINDOW_CLASS" --font-size="$WINDOW_FONT_SIZE" --window-width="$WINDOW_COLUMNS" --window-height="$WINDOW_ROWS" -e termdown "${termdown_args[@]}" >/dev/null 2>&1 &
 	else
 		# Intentionally allow the terminal setting to contain arguments.
 		# shellcheck disable=SC2086
