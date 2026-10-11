@@ -10,6 +10,7 @@ WINDOW_WIDTH="${TERMDOWN_STOPWATCH_WIDTH:-300}"
 WINDOW_HEIGHT="${TERMDOWN_STOPWATCH_HEIGHT:-140}"
 WINDOW_FONT_SIZE="${TERMDOWN_STOPWATCH_FONT_SIZE:-15}"
 WINDOW_MARGIN="${TERMDOWN_STOPWATCH_MARGIN:-16}"
+ALARM_SOUND="${TERMDOWN_STOPWATCH_ALARM_SOUND:-/usr/share/sounds/freedesktop/stereo/complete.oga}"
 
 STATE_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/hypr"
 CORNER_FILE="$STATE_DIR/termdown-stopwatch-corner"
@@ -23,6 +24,12 @@ No arguments opens a rofi prompt:
   - 10m, 1h 5m, 12:00, etc. starts timer mode
   - then choose the title text shown above the time
 
+Timer hotkeys:
+  SPACE             Pause/resume
+  R                 Reset
+  Q                 Quit
+  + / -             Add/subtract 10 seconds
+
 Commands:
   corner, position  Choose the corner and move the existing timer if open
   move              Re-apply the saved corner to the existing timer
@@ -34,6 +41,9 @@ Environment:
   TERMDOWN_STOPWATCH_WIDTH      Output window width, default: $WINDOW_WIDTH
   TERMDOWN_STOPWATCH_HEIGHT     Output window height, default: $WINDOW_HEIGHT
   TERMDOWN_STOPWATCH_FONT_SIZE  Ghostty font size, default: $WINDOW_FONT_SIZE
+  TERMDOWN_STOPWATCH_ALARM_SOUND
+                                 Sound to play when a countdown ends,
+                                 default: $ALARM_SOUND
 EOF
 }
 
@@ -73,6 +83,71 @@ notify_error() {
 	fi
 }
 
+play_alarm() {
+	[[ -n "$ALARM_SOUND" && -r "$ALARM_SOUND" ]] || return 0
+
+	if command -v paplay >/dev/null 2>&1; then
+		paplay "$ALARM_SOUND"
+	elif command -v pw-play >/dev/null 2>&1; then
+		pw-play "$ALARM_SOUND"
+	elif command -v canberra-gtk-play >/dev/null 2>&1; then
+		canberra-gtk-play -f "$ALARM_SOUND"
+	fi
+}
+
+timer_completed() {
+	local status_file="$1"
+
+	[[ -s "$status_file" ]] || return 1
+	grep -qx 'DONE' "$status_file" && [[ "$(tail -n 1 "$status_file")" == "0" ]]
+}
+
+run_termdown() {
+	local title="${1:-Stopwatch}"
+	local timespec="${2:-}"
+	local status_file=""
+	local exit_status=0
+	local -a termdown_args
+
+	termdown_args=(--no-art --title "$title")
+
+	if [[ -n "$timespec" ]]; then
+		mkdir -p "$STATE_DIR"
+		status_file="$(mktemp "$STATE_DIR/termdown-status.XXXXXX")"
+		rm -f "$status_file"
+		termdown_args+=(--outfile "$status_file" "$timespec")
+	fi
+
+	set +e
+	termdown "${termdown_args[@]}"
+	exit_status=$?
+	set -e
+
+	if [[ -n "$status_file" ]]; then
+		if timer_completed "$status_file"; then
+			play_alarm || true
+		fi
+
+		rm -f "$status_file"
+	fi
+
+	return "$exit_status"
+}
+
+script_path() {
+	local path="${BASH_SOURCE[0]}"
+
+	if [[ "$path" != */* ]] && command -v "$path" >/dev/null 2>&1; then
+		path="$(command -v "$path")"
+	fi
+
+	if command -v realpath >/dev/null 2>&1; then
+		realpath "$path" 2>/dev/null || printf '%s\n' "$path"
+	else
+		printf '%s\n' "$path"
+	fi
+}
+
 require_command() {
 	local command_name="$1"
 
@@ -104,7 +179,7 @@ prompt_timespec() {
 		printf '25m\n'
 		printf '50m\n'
 		printf '1h\n'
-	} | rofi_dmenu "Timer" -l 6 -mesg "Blank or 'stopwatch' = stopwatch. Type e.g. 90, 10m, 1h 5m, 12:00")" || exit 0
+	} | rofi_dmenu "Timer" -l 6 -mesg "Blank or 'stopwatch' = stopwatch. Type e.g. 90, 10m, 1h 5m, 12:00. Space pauses/resumes.")" || exit 0
 
 	case "$choice" in
 		"" | stopwatch | Stopwatch) printf '\n' ;;
@@ -325,8 +400,7 @@ terminal_command() {
 launch_timer() {
 	local timespec="$1"
 	local title="$2"
-	local terminal address
-	local -a termdown_args
+	local terminal address script
 
 	require_command hyprctl
 	require_command jq
@@ -341,11 +415,7 @@ launch_timer() {
 		fi
 	fi
 
-	termdown_args=(--no-art --title "$title")
-
-	if [[ -n "$timespec" ]]; then
-		termdown_args=(--no-art --title "$title" "$timespec")
-	fi
+	script="$(script_path)"
 
 	close_existing
 	wait_for_no_window || true
@@ -353,11 +423,11 @@ launch_timer() {
 	if [[ "$terminal" == *ghostty* ]]; then
 		# Intentionally allow the terminal setting to contain arguments.
 		# shellcheck disable=SC2086
-		$terminal --gtk-single-instance=false --class="$WINDOW_CLASS" --font-size="$WINDOW_FONT_SIZE" --window-width="$WINDOW_COLUMNS" --window-height="$WINDOW_ROWS" -e termdown "${termdown_args[@]}" >/dev/null 2>&1 &
+		$terminal --gtk-single-instance=false --class="$WINDOW_CLASS" --font-size="$WINDOW_FONT_SIZE" --window-width="$WINDOW_COLUMNS" --window-height="$WINDOW_ROWS" -e bash "$script" __run-termdown "$title" "$timespec" >/dev/null 2>&1 &
 	else
 		# Intentionally allow the terminal setting to contain arguments.
 		# shellcheck disable=SC2086
-		$terminal --class "$WINDOW_CLASS" -e termdown "${termdown_args[@]}" >/dev/null 2>&1 &
+		$terminal --class "$WINDOW_CLASS" -e bash "$script" __run-termdown "$title" "$timespec" >/dev/null 2>&1 &
 	fi
 
 	address="$(wait_for_window)" || {
@@ -375,6 +445,10 @@ main() {
 	local default_title timespec title
 
 	case "$command" in
+		__run-termdown)
+			shift
+			run_termdown "$@"
+			;;
 		-h | --help)
 			usage
 			;;
