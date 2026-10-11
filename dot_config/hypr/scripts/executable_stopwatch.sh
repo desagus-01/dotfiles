@@ -102,36 +102,41 @@ timer_completed() {
 	grep -qx 'DONE' "$status_file" && [[ "$(tail -n 1 "$status_file")" == "0" ]]
 }
 
-run_termdown() {
-	local title="${1:-Stopwatch}"
-	local timespec="${2:-}"
-	local status_file=""
-	local exit_status=0
-	local -a termdown_args
+window_exists() {
+	local address="$1"
 
-	termdown_args=(--no-art --title "$title")
+	[[ -n "$address" ]] || return 1
+	hyprctl clients -j | jq -e --arg address "$address" '.[] | select(.address == $address)' >/dev/null
+}
 
-	if [[ -n "$timespec" ]]; then
-		mkdir -p "$STATE_DIR"
-		status_file="$(mktemp "$STATE_DIR/termdown-status.XXXXXX")"
-		rm -f "$status_file"
-		termdown_args+=(--outfile "$status_file" "$timespec")
-	fi
+watch_timer() {
+	local status_file="$1"
+	local address="${2:-}"
+	local checks=0
 
-	set +e
-	termdown "${termdown_args[@]}"
-	exit_status=$?
-	set -e
-
-	if [[ -n "$status_file" ]]; then
+	while ((checks < 172800)); do
 		if timer_completed "$status_file"; then
 			play_alarm || true
+			rm -f "$status_file"
+			return 0
 		fi
 
-		rm -f "$status_file"
-	fi
+		if [[ -n "$address" ]] && ! window_exists "$address"; then
+			sleep 0.2
 
-	return "$exit_status"
+			if timer_completed "$status_file"; then
+				play_alarm || true
+			fi
+
+			rm -f "$status_file"
+			return 0
+		fi
+
+		sleep 0.25
+		checks=$((checks + 1))
+	done
+
+	rm -f "$status_file"
 }
 
 script_path() {
@@ -400,7 +405,8 @@ terminal_command() {
 launch_timer() {
 	local timespec="$1"
 	local title="$2"
-	local terminal address script
+	local terminal address script status_file terminal_pid
+	local -a termdown_args
 
 	require_command hyprctl
 	require_command jq
@@ -415,7 +421,14 @@ launch_timer() {
 		fi
 	fi
 
-	script="$(script_path)"
+	termdown_args=(--no-art --title "$title")
+
+	if [[ -n "$timespec" ]]; then
+		mkdir -p "$STATE_DIR"
+		status_file="$(mktemp "$STATE_DIR/termdown-status.XXXXXX")"
+		rm -f "$status_file"
+		termdown_args+=(--outfile "$status_file" "$timespec")
+	fi
 
 	close_existing
 	wait_for_no_window || true
@@ -423,11 +436,13 @@ launch_timer() {
 	if [[ "$terminal" == *ghostty* ]]; then
 		# Intentionally allow the terminal setting to contain arguments.
 		# shellcheck disable=SC2086
-		$terminal --gtk-single-instance=false --class="$WINDOW_CLASS" --font-size="$WINDOW_FONT_SIZE" --window-width="$WINDOW_COLUMNS" --window-height="$WINDOW_ROWS" -e bash "$script" __run-termdown "$title" "$timespec" >/dev/null 2>&1 &
+		$terminal --gtk-single-instance=false --class="$WINDOW_CLASS" --font-size="$WINDOW_FONT_SIZE" --window-width="$WINDOW_COLUMNS" --window-height="$WINDOW_ROWS" -e termdown "${termdown_args[@]}" >/dev/null 2>&1 &
+		terminal_pid=$!
 	else
 		# Intentionally allow the terminal setting to contain arguments.
 		# shellcheck disable=SC2086
-		$terminal --class "$WINDOW_CLASS" -e bash "$script" __run-termdown "$title" "$timespec" >/dev/null 2>&1 &
+		$terminal --class "$WINDOW_CLASS" -e termdown "${termdown_args[@]}" >/dev/null 2>&1 &
+		terminal_pid=$!
 	fi
 
 	address="$(wait_for_window)" || {
@@ -438,6 +453,11 @@ launch_timer() {
 	position_address "$address"
 	sleep 0.15
 	position_address "$address"
+
+	if [[ -n "${status_file:-}" ]]; then
+		script="$(script_path)"
+		nohup bash "$script" __watch-timer "$status_file" "$address" "$terminal_pid" >/dev/null 2>&1 &
+	fi
 }
 
 main() {
@@ -445,9 +465,9 @@ main() {
 	local default_title timespec title
 
 	case "$command" in
-		__run-termdown)
+		__watch-timer)
 			shift
-			run_termdown "$@"
+			watch_timer "$@"
 			;;
 		-h | --help)
 			usage
