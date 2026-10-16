@@ -1,0 +1,41 @@
+{
+  "mcpServers": {
+    "context7": {
+      "transport": "streamable-http",
+      "url": "https://mcp.context7.com/mcp",
+      "description": "Current, version-aware documentation lookup for libraries and frameworks",
+      "exposure": "deferred"
+    },
+    "playwright": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@playwright/mcp@latest"
+      ]
+    },
+    "reddit": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "reddit-mcp-server"
+      ],
+      "transport": "stdio",
+      "lifecycle": "lazy",
+      "requestTimeoutMs": 30000,
+      "maxRetries": 5,
+      "env": {
+        "REDDIT_MAX_RETRIES": "3",
+        "REDDIT_SAFE_MODE": "standard"
+      }
+    },
+    "lsp-lua": {
+      "command": "{{ .chezmoi.homeDir }}/go/bin/mcp-language-server",
+      "args": [
+        "--workspace",
+        ".",
+        "--lsp",
+        "{{ .chezmoi.homeDir }}/.local/share/nvim/mason/bin/lua-language-server"
+      ]
+    }
+  }
+}

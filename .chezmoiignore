@@ -30,3 +30,14 @@
 .config/.oh-my-zsh/README.md
 
 .config/.oh-my-zsh/themes/**
+
+# Pi agent state/secrets/cache (do not sync)
+.pi/agent/auth.json
+.pi/agent/mcp-auth.json
+.pi/agent/sessions/**
+.pi/agent/backups/**
+.pi/agent/install/**
+.pi/agent/npm/**
+.pi/agent/bin/**
+.pi/agent/models-store.json
+.pi/agent/trust.json
