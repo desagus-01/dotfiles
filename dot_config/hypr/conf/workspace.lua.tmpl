@@ -55,8 +55,7 @@ local function assign_workspaces(first_workspace, last_workspace, monitor, layou
 end
 
 {{ if eq .chezmoi.hostname "gus-pc-cachyos-x8664" }}
-assign_workspaces(1, 4, first_monitor, "scrolling")
-assign_workspaces(5, 8, second_monitor, "dwindle")
+assign_workspaces(1, 5, second_monitor, "scrolling")
 utils.signal_waybar_layout_module()
 {{ else if eq .chezmoi.hostname "laptop-cachyos-x8664" }}
 if docked then
