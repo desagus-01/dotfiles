@@ -6,6 +6,14 @@ hl.window_rule({
 	move = "20% 80%",
 })
 
+-- GNOME Calculator
+hl.window_rule({
+	name = "float-gnome-calculator",
+	match = { class = "^org[.]gnome[.]Calculator$" },
+	float = true,
+	center = true,
+})
+
 -- Floating termdown stopwatch/timer overlay
 hl.window_rule({
 	name = "float-termdown-stopwatch",
@@ -24,13 +32,24 @@ hl.window_rule({
 	no_blur = true,
 })
 
--- Bitwarden browser extension popup
-hl.window_rule({
-	name = "float-bitwarden-browser-popup",
-	match = { title = "^Extension: [(]Bitwarden Password Manager[)] - Bitwarden .*" },
-	float = true,
-	center = true,
-})
+-- Bitwarden's Zen extension popup maps as an ordinary Zen window, then changes
+-- its title. `float` is a static rule effect, so a title-matching window rule
+-- is too late; react to that title change instead.
+hl.on("window.title", function(window)
+	local is_bitwarden_popup = window.class == "zen"
+		and window.title:match("^Extension:%s*%(%s*Bitwarden Password Manager%s*%)%s*%-%s*Bitwarden.*")
+
+	if not is_bitwarden_popup then
+		return
+	end
+
+	-- Dispatcher selectors need the explicit `address:` prefix; a bare address
+	-- silently targets no window. `enable` is idempotent, so later title changes
+	-- cannot tile an already-floating popup.
+	local selector = "address:" .. window.address
+	hl.dispatch(hl.dsp.window.float({ action = "enable", window = selector }))
+	hl.dispatch(hl.dsp.window.center({ window = selector }))
+end)
 
 -- File pickers floating & centered
 hl.window_rule({
@@ -42,16 +61,13 @@ hl.window_rule({
 	center = true,
 })
 
--- xdg-desktop-portal dialogs
+-- GTK portal dialogs use their D-Bus application ID as the Wayland class.
+-- xdg-desktop-portal-hyprland is a backend and does not create these dialogs.
 hl.window_rule({
-	name = "float-xdg-portal",
-	match = { class = "^(xdg-desktop-portal-gtk|xdg-desktop-portal-hyprland)$" },
+	name = "float-xdg-portal-gtk",
+	match = { class = "^org[.]freedesktop[.]impl[.]portal[.]desktop[.]gtk$" },
 	float = true,
 	center = true,
-})
-hl.window_rule({
-	name = "no-border-xdg-portal",
-	match = { class = "^(xdg-desktop-portal-gtk)$" },
 	border_size = 0,
 })
 

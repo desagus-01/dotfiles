@@ -68,14 +68,32 @@ hl.bind(
 
 hl.bind(globals.main_mod .. " + T", hl.dsp.window.float({ action = "toggle" }), { description = "Toggle floating" })
 
--- NOTE: I could not find a clean new Lua dispatcher for old `workspaceopt allfloat`.
--- This keeps your old command as a compatibility fallback. Run `hyprctl configerrors`
--- and test this one manually after reload.
-hl.bind(
-	globals.main_mod .. " + SHIFT + T",
-	sh("hyprctl dispatch workspaceopt allfloat"),
-	{ description = "Toggle all windows floating on workspace - legacy fallback" }
-)
+-- `workspaceopt allfloat` was removed with the pre-0.55 configuration API.
+-- Keep the original all-float behavior through the current Lua API: if any window
+-- is tiled, float every window on this workspace; otherwise tile them all.
+hl.bind(globals.main_mod .. " + SHIFT + T", function()
+	local workspace = hl.get_active_workspace()
+	if not workspace then
+		return
+	end
+
+	local windows = workspace:get_windows()
+	if #windows == 0 then
+		return
+	end
+
+	local action = "unset"
+	for _, window in ipairs(windows) do
+		if not window.floating then
+			action = "set"
+			break
+		end
+	end
+
+	for _, window in ipairs(windows) do
+		hl.dispatch(hl.dsp.window.float({ action = action, window = window.address }))
+	end
+end, { description = "Toggle all windows floating on workspace" })
 
 -- Dwindle split toggle, only enable if you want it.
 -- WARNING: this would duplicate SUPER + S, which currently opens Spotify.
