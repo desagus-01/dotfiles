@@ -545,3 +545,26 @@ window#waybar.empty #window {
     margin: 3px 15px 3px 0px;
     opacity:1.0;
 }
+
+/* -----------------------------------------------------
+ * Super Productivity timer
+ * ----------------------------------------------------- */
+
+#custom-sptimer {
+    background-color: @workspacesbackground2;
+    font-size: 15px;
+    color: @textcolor3;
+    border: 1px solid @workspacesborder;
+    border-radius: 5px;
+    padding: 2px 10px 0px 10px;
+    margin: 3px 8px 3px 0px;
+}
+
+#custom-sptimer.overtime {
+    color: #ff6b6b;
+}
+
+#custom-sptimer.paused {
+    color: @textcolor2;
+    opacity: 0.75;
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Super Productivity Waybar Timer",
+  "id": "super-productivity-waybar-timer",
+  "manifestVersion": 1,
+  "version": "2.4.0",
+  "minSupVersion": "20.0.0",
+  "description": "Starts timed sessions for today's Super Productivity tasks from a Hyprland Rofi picker and shows the timer in Waybar.",
+  "author": "Local",
+  "hooks": ["currentTaskChange", "dataChanged", "dayChange"],
+  "permissions": ["getTasks", "getDayContext", "startTracking", "stopTracking", "nodeExecution", "showSnack"],
+  "dataSharing": [],
+  "isSkipMenuEntry": true
+}

@@ -14,7 +14,16 @@
   "on-click": "~/.config/scripts/weekly_update.sh status run"
 },
 
-
+  // Current Super Productivity task and remaining estimate
+  "custom/sptimer": {
+    "exec": "python3 ~/.config/waybar/sptimer.py",
+    "return-type": "json",
+    "interval": 1,
+    "format": "{}",
+    "escape": true,
+    "tooltip": true,
+    "on-click": "~/.config/waybar/sptimer_menu.sh"
+  },
 
   // Workspaces
   "hyprland/workspaces": {
