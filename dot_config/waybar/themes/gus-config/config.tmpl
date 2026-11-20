@@ -23,6 +23,9 @@
         "custom/weather",
         "custom/custom_updates",
         "pulseaudio",
+{{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" }}
+        "custom/monitor_brightness",
+{{- end }}
     ],
 
     // Modules Center
@@ -48,7 +51,6 @@
 	"battery",
         "backlight",
         "network",
-        "custom/ddc_brightness", 
         "clock",
         "custom/sptimer",
         "power-profiles-daemon",

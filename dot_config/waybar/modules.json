@@ -192,18 +192,14 @@
     "tooltip-format": "Left: Notifications\nRight: Do not disturb",
     "format": "{icon}",
     "format-icons": {
-      "notification":
-        "<span rise='8pt'><span foreground='red'><sup></sup></span></span>",
-      "none": "",
-      "dnd-notification":
-        "<span rise='8pt'><span foreground='red'><sup></sup></span></span>",
-      "dnd-none": "",
-      "inhibited-notification":
-        "<span rise='8pt'><span foreground='red'><sup></sup></span></span>",
-      "inhibited-none": "",
-      "dnd-inhibited-notification":
-        "<span rise='8pt'><span foreground='red'><sup></sup></span></span>",
-      "dnd-inhibited-none": ""
+      "notification": "<span foreground='#f6c177'></span><span rise='8pt' foreground='#eb6f92'><sup></sup></span>",
+      "none": "<span foreground='#89b4fa'></span>",
+      "dnd-notification": "<span foreground='#c4a7e7'></span>",
+      "dnd-none": "<span foreground='#9ccfd8'></span>",
+      "inhibited-notification": "<span foreground='#f6c177'></span><span rise='8pt' foreground='#eb6f92'><sup></sup></span>",
+      "inhibited-none": "<span foreground='#89b4fa'></span>",
+      "dnd-inhibited-notification": "<span foreground='#c4a7e7'></span>",
+      "dnd-inhibited-none": "<span foreground='#9ccfd8'></span>"
     },
     "return-type": "json",
     "exec-if": "which swaync-client",
@@ -459,22 +455,18 @@
     "interval": 3600,
     "on-click": "~/.config/waybar/scripts/run_update.sh"
 },
-// brightness
- "custom/ddc_brightness": {
-        "format": "<span rise='-2pt' size='12pt'>{icon}</span> <span rise='1pt' size='10pt'>{percentage}%</span>",
-        "format-icons": [
-            // Icons from Google Material Symbols.
-            // Put your icons here.
-            "\ue3a6", "\ue3a7", "\ue3a8", "\ue3a9", "\ue3aa", "\ue3ab", "\ue3ac"
-        ],
-        "exec": "~/.config/waybar/scripts/waybar-ddc-module.sh",
-        "return-type": "json",
-        "on-scroll-up": "echo '+' > /tmp/waybar-ddc-module-rx",
-        "on-scroll-down": "echo '-' > /tmp/waybar-ddc-module-rx",
-        "on-click": "echo 'min' > /tmp/waybar-ddc-module-rx",
-        "on-click-right": "echo 'max' > /tmp/waybar-ddc-module-rx",
-        "tooltip": false,
-    },
+// External monitor brightness (DDC/CI)
+  "custom/monitor_brightness": {
+    "exec": "~/.config/hypr/scripts/brightness.sh status",
+    "return-type": "json",
+    "format": "{icon}  {text}",
+    "format-icons": "",
+    "interval": "once",
+    "signal": 9,
+    "exec-on-event": true,
+    "on-scroll-up": "~/.config/hypr/scripts/brightness.sh +",
+    "on-scroll-down": "~/.config/hypr/scripts/brightness.sh -"
+  },
 
 	// workspace
 	"custom/workspace_layout": {

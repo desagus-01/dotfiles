@@ -10,7 +10,6 @@ pacman_packages_core:
   - firefox
   - ghostty
   - git
-  - mako
   - skanpage
   - sddm
   - r

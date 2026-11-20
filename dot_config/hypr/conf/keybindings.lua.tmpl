@@ -300,12 +300,10 @@ hl.bind("XF86Calculator", sh(home .. "/.config/ml4w/settings/calculator.sh"), { 
 -- -----------------------------------------------------
 -- Brightness
 -- -----------------------------------------------------
-{{- if eq .chezmoi.hostname "gus-pc-cachyos-x8664" }}
-hl.bind("XF86MonBrightnessUp", sh(HYPRSCRIPTS .. "/hypr_brightness.sh +"), { locked = true, repeating = true, description = "Increase brightness" })
-hl.bind("XF86MonBrightnessDown", sh(HYPRSCRIPTS .. "/hypr_brightness.sh -"), { locked = true, repeating = true, description = "Decrease brightness" })
-{{- else }}
-hl.bind("XF86MonBrightnessUp", sh("brightnessctl set 10%+"), { locked = true, repeating = true, description = "Increase brightness" })
-hl.bind("XF86MonBrightnessDown", sh("brightnessctl set 10%-"), { locked = true, repeating = true, description = "Decrease brightness" })
-{{- end }}
+-- Uses the internal backlight on laptops and DDC/CI for external displays.
+hl.bind("F1", sh(HYPRSCRIPTS .. "/brightness.sh -"), { locked = true, repeating = true, description = "Decrease brightness" })
+hl.bind("F2", sh(HYPRSCRIPTS .. "/brightness.sh +"), { locked = true, repeating = true, description = "Increase brightness" })
+hl.bind("XF86MonBrightnessUp", sh(HYPRSCRIPTS .. "/brightness.sh +"), { locked = true, repeating = true, description = "Increase brightness" })
+hl.bind("XF86MonBrightnessDown", sh(HYPRSCRIPTS .. "/brightness.sh -"), { locked = true, repeating = true, description = "Decrease brightness" })
 
 
